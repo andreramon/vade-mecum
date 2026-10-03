@@ -1,0 +1,13 @@
+{
+  "name": "vade-mecum",
+  "scripts": {
+    "atualizar": "node scripts/atualizar.mjs",
+    "testar": "node scripts/testar-parser.mjs"
+  },
+  "type": "module",
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "unpdf": "^1.8.1"
+  },
+  "private": true
+}

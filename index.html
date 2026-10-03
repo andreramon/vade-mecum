@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vade Mecum</title>
+<meta name="description" content="Legislação brasileira sempre atualizada, com busca rápida e leitura offline.">
+<meta name="theme-color" content="#F3F5F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121816" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papel:#F3F5F2; --sup:#FFFFFF; --tinta:#18211D; --tinta2:#56635C; --linha:#D6DDD8;
+  --marca:#F6DC5C; --marca-t:#2E2600; --ouro:#B8902A; --foco:#2E4F9E; --cor:#1F6B4E; --fs:1;
+  --serif:"Literata", Georgia, "Times New Roman", serif;
+  --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --hl-amarelo:#F8E27A; --hl-verde:#A8E6BC; --hl-azul:#B5D3F7; --hl-rosa:#F7BED6;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-fundo="branco"]{--papel:#FFFFFF;--linha:#DCE1DD}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --papel:#121816; --sup:#1A2220; --tinta:#E4E9E6; --tinta2:#9AA7A0; --linha:#2C3633;
+    --marca:#7C6A12; --marca-t:#FFF5C2; --ouro:#D9B54E; --foco:#8FA8F0; --hl-amarelo:rgba(246,220,92,.36); --hl-verde:rgba(120,220,150,.30); --hl-azul:rgba(120,170,245,.36); --hl-rosa:rgba(245,140,185,.34); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --papel:#121816; --sup:#1A2220; --tinta:#E4E9E6; --tinta2:#9AA7A0; --linha:#2C3633;
+  --marca:#7C6A12; --marca-t:#FFF5C2; --ouro:#D9B54E; --foco:#8FA8F0; --hl-amarelo:rgba(246,220,92,.36); --hl-verde:rgba(120,220,150,.30); --hl-azul:rgba(120,170,245,.36); --hl-rosa:rgba(245,140,185,.34); color-scheme:dark;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--foco);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+
+/* Cor da lei em tons */
+.tinta-lei{color:color-mix(in srgb,var(--cor) 82%,var(--tinta))}
+:root[data-theme="dark"] .tinta-lei{color:color-mix(in srgb,var(--cor) 45%,white)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tinta-lei{color:color-mix(in srgb,var(--cor) 45%,white)}}
+
+/* Botões de ícone */
+.ico{display:inline-grid;place-items:center;width:44px;height:44px;border:0;border-radius:12px;background:transparent;cursor:pointer;text-decoration:none;flex:none}
+.ico:hover{background:color-mix(in srgb,var(--tinta) 7%,transparent)}
+.ico svg{width:22px;height:22px}
+
+/* Início */
+.topo{display:flex;align-items:center;justify-content:space-between;padding:20px 0 0}
+.marca-app{font-family:var(--serif);font-weight:600;font-size:clamp(34px,9vw,44px);line-height:1.05;letter-spacing:-.01em;margin:0}
+.verif{margin:6px 0 22px;color:var(--tinta2);font-size:14px}
+.campo-busca{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:0 16px;border:1px solid var(--linha);border-radius:16px;background:var(--sup);color:var(--tinta2);cursor:text;text-align:left;font-size:16px}
+.campo-busca svg{width:20px;height:20px;flex:none}
+.campo-busca input{flex:1;min-width:0;border:0;background:transparent;font:inherit;color:var(--tinta);outline:none;padding:14px 0}
+.campo-busca:focus-within{border-color:var(--foco)}
+.campo-busca.compacto{min-height:44px;border-radius:12px}
+.campo-busca.compacto input{padding:10px 0}
+.aviso{margin:18px 0 0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--marca) 35%,var(--sup));color:var(--tinta);font-size:14px}
+.secao{font-family:var(--serif);font-weight:600;font-size:22px;margin:34px 0 12px}
+
+/* Estante: cada lei é um livro com lombada */
+.estante{display:grid;gap:10px}
+.livro{position:relative;display:grid;grid-template-columns:auto 1fr;column-gap:16px;align-items:center;padding:16px 16px 16px 0;border-radius:4px 14px 14px 4px;background:var(--sup);border:1px solid var(--linha);text-decoration:none;overflow:hidden}
+.livro:hover{border-color:color-mix(in srgb,var(--cor) 50%,var(--linha))}
+.lombada{grid-row:1/span 2;align-self:stretch;width:18px;margin:-16px 0;background:linear-gradient(var(--cor) 12px,var(--ouro) 12px 15px,var(--cor) 15px 19px,var(--ouro) 19px 21px,var(--cor) 21px calc(100% - 21px),var(--ouro) calc(100% - 21px) calc(100% - 19px),var(--cor) calc(100% - 19px) calc(100% - 15px),var(--ouro) calc(100% - 15px) calc(100% - 12px),var(--cor) calc(100% - 12px));
+  box-shadow:inset -3px 0 0 rgba(0,0,0,.18)}
+.livro-sigla{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.1}
+.livro-info{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;color:var(--tinta2);font-size:14px}
+.livro-info b{color:var(--tinta);font-weight:500}
+.selo{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--marca);color:var(--marca-t);font-size:12.5px;font-weight:600;font-family:var(--sans)}
+
+.lista{list-style:none;margin:0;padding:0;border-top:1px solid var(--linha)}
+.lista li{border-bottom:1px solid var(--linha)}
+.lista a{display:block;padding:12px 2px;text-decoration:none}
+.lista .ref{font-weight:600;font-size:14px}
+.lista .trecho{display:block;color:var(--tinta2);font-family:var(--serif);font-size:15px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.vazio{color:var(--tinta2);padding:24px 0}
+
+/* Barra superior do leitor e da busca */
+.barra{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--papel) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:3px solid var(--cor)}
+.barra.neutra{border-bottom:1px solid var(--linha)}
+.barra-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:4px;padding:6px 8px}
+.barra-tit{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2;padding:0 4px}
+.barra-tit strong{font-family:var(--serif);font-size:18px}
+.barra-tit span{font-size:12.5px;color:var(--tinta2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Texto da lei */
+.texto{font-family:var(--serif);font-size:calc(17px * var(--fs));line-height:1.7;padding-bottom:64px}
+.lei-tit{font-family:var(--serif);font-weight:600;font-size:calc(26px * var(--fs));line-height:1.25;margin:28px 0 6px}
+.lei-meta{font-family:var(--sans);font-size:14px;color:var(--tinta2);margin:0 0 8px}
+.cab{text-align:center;margin:2.4em 0 1em;font-weight:600;font-size:1em;line-height:1.4}
+.cab-rot{display:block;font-family:var(--sans);font-size:.72em;letter-spacing:.06em;font-weight:600}
+.cab-nome{display:block;margin-top:.15em}
+.cab.n0 .cab-nome,.cab.n1 .cab-nome{font-size:1.12em}
+.cab.n3,.cab.n4,.cab.n5{margin-top:1.8em}
+.cab.n4 .cab-nome,.cab.n5 .cab-nome{font-weight:400;font-style:italic}
+.art{margin:0 0 1.4em;padding:2px 0;border-radius:8px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 72px)}
+.cab{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 72px)}
+.art-cab{display:flex;align-items:center;gap:8px;min-height:36px}
+.art-num{font-family:var(--sans);font-weight:600;font-size:.86em;text-decoration:none;padding:2px 0}
+.art.recente .art-num{background:var(--marca);color:var(--marca-t);padding:2px 8px;border-radius:4px}
+.art-acoes{margin-left:auto;display:flex;gap:2px}
+.art-acoes button{width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--tinta2);cursor:pointer;display:grid;place-items:center}
+.art-acoes button:hover{background:color-mix(in srgb,var(--tinta) 7%,transparent);color:var(--tinta)}
+.art-acoes svg{width:19px;height:19px}
+.art-acoes button[aria-pressed="true"]{color:var(--ouro)}
+.art-acoes button[aria-pressed="true"] svg{fill:currentColor}
+.art p{margin:0 0 .35em}
+.disp .rot{font-weight:600}
+.disp.inciso{padding-left:1.1em}
+.disp.alinea{padding-left:2.2em}
+.disp.item{padding-left:3.2em}
+.disp.paragrafo{margin-top:.5em}
+.nota{display:inline;font-family:var(--sans);font-size:.74em;color:var(--tinta2);margin-left:.35em}
+.art.revogado .caput,.disp.revogado{color:var(--tinta2);font-style:italic}
+.art.pisca{animation:pisca 1.6s ease-out}
+@keyframes pisca{0%,30%{background:color-mix(in srgb,var(--marca) 55%,transparent)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){.art.pisca{animation:none;outline:2px solid var(--marca)}}
+.lei-fonte{font-family:var(--sans);font-size:13.5px;color:var(--tinta2);border-top:1px solid var(--linha);margin-top:3em;padding-top:1em}
+
+/* Busca */
+.contagem{color:var(--tinta2);font-size:14px;margin:18px 0 6px}
+.res{display:block;padding:14px 2px;border-bottom:1px solid var(--linha);text-decoration:none}
+.res-ref{display:flex;gap:8px;align-items:baseline;font-size:14px;font-weight:600}
+.res-ref .sig{font-family:var(--serif)}
+.res-txt{display:block;font-family:var(--serif);font-size:16px;line-height:1.55;margin-top:2px}
+mark{background:var(--marca);color:var(--marca-t);border-radius:3px;padding:0 1px}
+.dicas{color:var(--tinta2);font-size:15px;padding-top:12px}
+.dicas p{margin:0 0 8px}
+.dicas button{border:1px solid var(--linha);background:var(--sup);border-radius:999px;padding:6px 12px;margin:0 6px 8px 0;cursor:pointer;font-size:14px}
+
+/* Diálogos */
+dialog{border:0;padding:0;background:var(--sup);color:var(--tinta);border-radius:20px 20px 0 0;width:100%;max-width:560px;margin:auto auto 0;max-height:82vh;box-shadow:0 -8px 40px rgba(0,0,0,.25)}
+@media (min-width:640px){dialog{border-radius:20px;margin:auto}}
+dialog::backdrop{background:rgba(10,15,13,.45)}
+.dlg-cab{display:flex;align-items:center;justify-content:space-between;padding:10px 10px 6px 20px;position:sticky;top:0;background:var(--sup)}
+.dlg-cab h2{font-family:var(--serif);font-size:20px;margin:0}
+.dlg-corpo{padding:4px 20px calc(24px + env(safe-area-inset-bottom,0px))}
+.indice a{display:block;padding:9px 0;border-bottom:1px solid var(--linha);text-decoration:none;font-size:15px;line-height:1.35}
+.indice a small{display:block;color:var(--tinta2);font-size:12px;font-weight:600;letter-spacing:.03em}
+.indice .n3{padding-left:14px}.indice .n4,.indice .n5{padding-left:28px}
+.ajuste{margin:14px 0 22px}
+.ajuste h3{font-size:14px;font-weight:600;margin:0 0 8px;color:var(--tinta2)}
+.segmento{display:flex;border:1px solid var(--linha);border-radius:12px;overflow:hidden}
+.segmento button{flex:1;min-height:44px;border:0;background:transparent;cursor:pointer}
+.segmento button+button{border-left:1px solid var(--linha)}
+.segmento button[aria-pressed="true"]{background:var(--tinta);color:var(--papel)}
+.fonte-ctrl{display:flex;align-items:center;gap:12px}
+.fonte-ctrl button{width:48px;height:44px;border:1px solid var(--linha);border-radius:12px;background:transparent;cursor:pointer;font-family:var(--serif)}
+.fonte-ctrl output{flex:1;text-align:center;font-family:var(--serif)}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tinta);color:var(--papel);padding:10px 18px;border-radius:999px;font-size:14px;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+.toast.on{opacity:1}
+.hl{color:inherit;padding:0;border-radius:2px;cursor:pointer;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.hl-amarelo{background:var(--hl-amarelo)}.hl-verde{background:var(--hl-verde)}.hl-azul{background:var(--hl-azul)}.hl-rosa{background:var(--hl-rosa)}
+.barra-marca{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160%);display:flex;align-items:center;gap:6px;padding:7px;border-radius:999px;background:var(--sup);border:1px solid var(--linha);box-shadow:0 10px 30px rgba(0,0,0,.2);z-index:15;transition:transform .2s ease-out;font-family:var(--sans)}
+.barra-marca:not(.on){visibility:hidden;transition:transform .2s ease-out,visibility 0s .2s}
+.barra-marca.on{transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.barra-marca{transition:none}}
+.barra-marca .cor{width:40px;height:40px;border-radius:50%;border:3px solid var(--sup);box-shadow:0 0 0 1px var(--linha);cursor:pointer;padding:0}
+.barra-marca .cor[aria-pressed="true"]{box-shadow:0 0 0 2px var(--tinta)}
+.barra-marca .sep{width:1px;height:26px;background:var(--linha);margin:0 2px}
+.barra-marca .txt-btn{border:0;background:transparent;height:40px;padding:0 12px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:500}
+.barra-marca .txt-btn:hover{background:color-mix(in srgb,var(--tinta) 7%,transparent)}
+.ponto{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.livro.pendente{opacity:.55}
+.selo-cinza{display:inline-block;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,var(--tinta) 12%,transparent);color:var(--tinta2);font-size:12.5px;font-weight:600;font-family:var(--sans)}
+.continuar{display:flex;align-items:center;gap:14px;margin-top:14px;padding:14px 16px;border-radius:14px;background:var(--sup);border:1px solid var(--linha);border-left:6px solid var(--cor);text-decoration:none}
+.continuar .c1,.continuar .c2{display:block}
+.continuar .c1{font-size:13px;color:var(--tinta2)}
+.continuar .c2{font-family:var(--serif);font-weight:600;font-size:18px}
+.continuar svg{margin-left:auto;width:20px;height:20px;transform:rotate(180deg);color:var(--tinta2);flex:none}
+.carregando{color:var(--tinta2);padding-top:40px}
+</style>
+</head>
+<body>
+<main id="app" aria-live="polite"></main>
+
+<dialog id="dlg-indice" aria-labelledby="t-indice">
+  <div class="dlg-cab"><h2 id="t-indice">Sumário</h2><button class="ico" data-acao="fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <nav class="dlg-corpo indice" id="lista-indice"></nav>
+</dialog>
+
+<dialog id="dlg-ajustes" aria-labelledby="t-ajustes">
+  <div class="dlg-cab"><h2 id="t-ajustes">Leitura</h2><button class="ico" data-acao="fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dlg-corpo">
+    <div class="ajuste"><h3>Tema</h3>
+      <div class="segmento" role="group" aria-label="Tema">
+        <button data-acao="tema" data-valor="auto">Automático</button>
+        <button data-acao="tema" data-valor="light">Claro</button>
+        <button data-acao="tema" data-valor="dark">Escuro</button>
+      </div>
+    </div>
+    <div class="ajuste"><h3>Fundo no tema claro</h3>
+      <div class="segmento" role="group" aria-label="Fundo">
+        <button data-acao="fundo" data-valor="papel">Papel</button>
+        <button data-acao="fundo" data-valor="branco">Branco</button>
+      </div>
+    </div>
+    <div class="ajuste"><h3>Tamanho do texto</h3>
+      <div class="fonte-ctrl">
+        <button data-acao="fonte" data-valor="-1" aria-label="Diminuir texto">A−</button>
+        <output id="fonte-val">100%</output>
+        <button data-acao="fonte" data-valor="1" aria-label="Aumentar texto" style="font-size:20px">A+</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<div class="barra-marca" id="barra-marca" role="toolbar" aria-label="Marcar texto">
+  <button class="cor" data-acao="marcar" data-valor="amarelo" style="background:#F8E27A" aria-label="Marcar em amarelo"></button>
+  <button class="cor" data-acao="marcar" data-valor="verde" style="background:#A8E6BC" aria-label="Marcar em verde"></button>
+  <button class="cor" data-acao="marcar" data-valor="azul" style="background:#B5D3F7" aria-label="Marcar em azul"></button>
+  <button class="cor" data-acao="marcar" data-valor="rosa" style="background:#F7BED6" aria-label="Marcar em rosa"></button>
+  <span class="sep"></span>
+  <button class="txt-btn" data-acao="desmarcar" hidden>Remover</button>
+  <button class="txt-btn" data-acao="fechar-marca">Fechar</button>
+</div>
+
+<!-- Amostra usada apenas quando data/indice.json ainda não existe (antes da 1ª execução do robô) -->
+<script type="application/json" id="dados-demo">
+{"verificadoEm":null,"pendentes":[{"sigla":"CPC","nomeCurto":"Código de Processo Civil","cor":"#6B4E9B"},{"sigla":"CPP","nomeCurto":"Código de Processo Penal","cor":"#A35418"},{"sigla":"CLT","nomeCurto":"Consolidação das Leis do Trabalho","cor":"#2F7F86"},{"sigla":"CDC","nomeCurto":"Código de Defesa do Consumidor","cor":"#A8467A"},{"sigla":"CTN","nomeCurto":"Código Tributário Nacional","cor":"#5A6B2E"},{"sigla":"ECA","nomeCurto":"Estatuto da Criança e do Adolescente","cor":"#8C5A3C"}],"leis":[
+{"id":"cf88","sigla":"CF/88","nomeCurto":"Constituição Federal","titulo":"Constituição da República Federativa do Brasil de 1988","cor":"#1F6B4E","apelidos":"cf constituicao federal","fonte":"https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm","blocos":[
+{"tipo":"titulo","id":"h1","nivel":2,"rotulo":"TÍTULO I","nome":"DOS PRINCÍPIOS FUNDAMENTAIS"},
+{"tipo":"artigo","id":"art1","numero":"1º","caput":"A República Federativa do Brasil, formada pela união indissolúvel dos Estados e Municípios e do Distrito Federal, constitui-se em Estado Democrático de Direito e tem como fundamentos:","dispositivos":[{"tipo":"inciso","rotulo":"I","texto":"a soberania;"},{"tipo":"inciso","rotulo":"II","texto":"a cidadania;"},{"tipo":"inciso","rotulo":"III","texto":"a dignidade da pessoa humana;"},{"tipo":"inciso","rotulo":"IV","texto":"os valores sociais do trabalho e da livre iniciativa;"},{"tipo":"inciso","rotulo":"V","texto":"o pluralismo político."},{"tipo":"paragrafo","rotulo":"Parágrafo único.","texto":"Todo o poder emana do povo, que o exerce por meio de representantes eleitos ou diretamente, nos termos desta Constituição."}]},
+{"tipo":"artigo","id":"art2","numero":"2º","caput":"São Poderes da União, independentes e harmônicos entre si, o Legislativo, o Executivo e o Judiciário.","dispositivos":[]},
+{"tipo":"artigo","id":"art3","numero":"3º","caput":"Constituem objetivos fundamentais da República Federativa do Brasil:","dispositivos":[{"tipo":"inciso","rotulo":"I","texto":"construir uma sociedade livre, justa e solidária;"},{"tipo":"inciso","rotulo":"II","texto":"garantir o desenvolvimento nacional;"},{"tipo":"inciso","rotulo":"III","texto":"erradicar a pobreza e a marginalização e reduzir as desigualdades sociais e regionais;"},{"tipo":"inciso","rotulo":"IV","texto":"promover o bem de todos, sem preconceitos de origem, raça, sexo, cor, idade e quaisquer outras formas de discriminação."}]},
+{"tipo":"artigo","id":"art4","numero":"4º","caput":"A República Federativa do Brasil rege-se nas suas relações internacionais pelos seguintes princípios:","dispositivos":[{"tipo":"inciso","rotulo":"I","texto":"independência nacional;"},{"tipo":"inciso","rotulo":"II","texto":"prevalência dos direitos humanos;"},{"tipo":"inciso","rotulo":"III","texto":"autodeterminação dos povos;"},{"tipo":"inciso","rotulo":"IV","texto":"não-intervenção;"},{"tipo":"inciso","rotulo":"V","texto":"igualdade entre os Estados;"},{"tipo":"inciso","rotulo":"VI","texto":"defesa da paz;"},{"tipo":"inciso","rotulo":"VII","texto":"solução pacífica dos conflitos;"},{"tipo":"inciso","rotulo":"VIII","texto":"repúdio ao terrorismo e ao racismo;"},{"tipo":"inciso","rotulo":"IX","texto":"cooperação entre os povos para o progresso da humanidade;"},{"tipo":"inciso","rotulo":"X","texto":"concessão de asilo político."},{"tipo":"paragrafo","rotulo":"Parágrafo único.","texto":"A República Federativa do Brasil buscará a integração econômica, política, social e cultural dos povos da América Latina, visando à formação de uma comunidade latino-americana de nações."}]},
+{"tipo":"titulo","id":"h2","nivel":2,"rotulo":"TÍTULO II","nome":"DOS DIREITOS E GARANTIAS FUNDAMENTAIS"},
+{"tipo":"titulo","id":"h3","nivel":3,"rotulo":"CAPÍTULO I","nome":"DOS DIREITOS E DEVERES INDIVIDUAIS E COLETIVOS"},
+{"tipo":"artigo","id":"art5","numero":"5º","caput":"Todos são iguais perante a lei, sem distinção de qualquer natureza, garantindo-se aos brasileiros e aos estrangeiros residentes no País a inviolabilidade do direito à vida, à liberdade, à igualdade, à segurança e à propriedade, nos termos seguintes:","dispositivos":[{"tipo":"inciso","rotulo":"I","texto":"homens e mulheres são iguais em direitos e obrigações, nos termos desta Constituição;"},{"tipo":"inciso","rotulo":"II","texto":"ninguém será obrigado a fazer ou deixar de fazer alguma coisa senão em virtude de lei;"},{"tipo":"inciso","rotulo":"III","texto":"ninguém será submetido a tortura nem a tratamento desumano ou degradante;"}]},
+{"tipo":"titulo","id":"h4","nivel":3,"rotulo":"CAPÍTULO II","nome":"DOS DIREITOS SOCIAIS"},
+{"tipo":"artigo","id":"art6","numero":"6º","caput":"São direitos sociais a educação, a saúde, a alimentação, o trabalho, a moradia, o transporte, o lazer, a segurança, a previdência social, a proteção à maternidade e à infância, a assistência aos desamparados, na forma desta Constituição.","nota":"(Redação dada pela Emenda Constitucional nº 90, de 2015)","dispositivos":[{"tipo":"paragrafo","rotulo":"Parágrafo único.","texto":"Todo brasileiro em situação de vulnerabilidade social terá direito a uma renda básica familiar, garantida pelo poder público em programa permanente de transferência de renda, cujas normas e requisitos de acesso serão determinados em lei, observada a legislação fiscal e orçamentária.","nota":"(Incluído pela Emenda Constitucional nº 114, de 2021)"}]}
+]},
+{"id":"cc2002","sigla":"CC","nomeCurto":"Código Civil","titulo":"Código Civil (Lei nº 10.406, de 10 de janeiro de 2002)","cor":"#2C4C96","apelidos":"cc codigo civil","fonte":"https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm","blocos":[
+{"tipo":"titulo","id":"h1","nivel":0,"rotulo":"PARTE GERAL","nome":""},
+{"tipo":"titulo","id":"h2","nivel":1,"rotulo":"LIVRO I","nome":"DAS PESSOAS"},
+{"tipo":"titulo","id":"h3","nivel":2,"rotulo":"TÍTULO I","nome":"DAS PESSOAS NATURAIS"},
+{"tipo":"titulo","id":"h4","nivel":3,"rotulo":"CAPÍTULO I","nome":"DA PERSONALIDADE E DA CAPACIDADE"},
+{"tipo":"artigo","id":"art1","numero":"1º","caput":"Toda pessoa é capaz de direitos e deveres na ordem civil.","dispositivos":[]},
+{"tipo":"artigo","id":"art2","numero":"2º","caput":"A personalidade civil da pessoa começa do nascimento com vida; mas a lei põe a salvo, desde a concepção, os direitos do nascituro.","dispositivos":[]},
+{"tipo":"artigo","id":"art3","numero":"3º","caput":"São absolutamente incapazes de exercer pessoalmente os atos da vida civil os menores de 16 (dezesseis) anos.","nota":"(Redação dada pela Lei nº 13.146, de 2015) (Vigência)","dispositivos":[]}
+]},
+{"id":"cp1940","sigla":"CP","nomeCurto":"Código Penal","titulo":"Código Penal (Decreto-Lei nº 2.848, de 7 de dezembro de 1940)","cor":"#8A2C3C","apelidos":"cp codigo penal","fonte":"https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm","blocos":[
+{"tipo":"titulo","id":"h1","nivel":0,"rotulo":"PARTE GERAL","nome":""},
+{"tipo":"titulo","id":"h2","nivel":2,"rotulo":"TÍTULO I","nome":"DA APLICAÇÃO DA LEI PENAL"},
+{"tipo":"artigo","id":"art1","numero":"1º","caput":"Não há crime sem lei anterior que o defina. Não há pena sem prévia cominação legal.","nota":"(Redação dada pela Lei nº 7.209, de 11.7.1984)","dispositivos":[]},
+{"tipo":"artigo","id":"art2","numero":"2º","caput":"Ninguém pode ser punido por fato que lei posterior deixa de considerar crime, cessando em virtude dela a execução e os efeitos penais da sentença condenatória.","nota":"(Redação dada pela Lei nº 7.209, de 11.7.1984)","dispositivos":[{"tipo":"paragrafo","rotulo":"Parágrafo único.","texto":"A lei posterior, que de qualquer modo favorecer o agente, aplica-se aos fatos anteriores, ainda que decididos por sentença condenatória transitada em julgado.","nota":"(Redação dada pela Lei nº 7.209, de 11.7.1984)"}]}
+]},
+{"id":"svstf","grupo":"sumulas","sigla":"SV","nomeCurto":"Súmulas Vinculantes do STF","titulo":"Súmulas Vinculantes do Supremo Tribunal Federal","cor":"#1E3A5F","rotuloItem":"Súmula Vinculante","apelidos":"sv sumula vinculante stf supremo","fonte":"https://portal.stf.jus.br/jurisprudencia/sumariosumulas.asp?base=26","blocos":[
+{"tipo":"artigo","id":"sum11","numero":"11","caput":"Só é lícito o uso de algemas em casos de resistência e de fundado receio de fuga ou de perigo à integridade física própria ou alheia, por parte do preso ou de terceiros, justificada a excepcionalidade por escrito, sob pena de responsabilidade disciplinar, civil e penal do agente ou da autoridade e de nulidade da prisão ou do ato processual a que se refere, sem prejuízo da responsabilidade civil do Estado.","dispositivos":[]},
+{"tipo":"artigo","id":"sum14","numero":"14","caput":"É direito do defensor, no interesse do representado, ter acesso amplo aos elementos de prova que, já documentados em procedimento investigatório realizado por órgão com competência de polícia judiciária, digam respeito ao exercício do direito de defesa.","dispositivos":[]},
+{"tipo":"artigo","id":"sum25","numero":"25","caput":"É ilícita a prisão civil de depositário infiel, qualquer que seja a modalidade do depósito.","dispositivos":[]}
+]},
+{"id":"sumstf","grupo":"sumulas","sigla":"STF","nomeCurto":"Súmulas do STF","titulo":"Súmulas do Supremo Tribunal Federal","cor":"#44546A","rotuloItem":"Súmula","apelidos":"stf supremo sumula","fonte":"https://www.stf.jus.br/arquivo/cms/jurisprudenciaSumula/anexo/Enunciados_Sumulas_STF_1_a_736_Completo.pdf","blocos":[
+{"tipo":"artigo","id":"sum473","numero":"473","caput":"A administração pode anular seus próprios atos, quando eivados de vícios que os tornam ilegais, porque deles não se originam direitos; ou revogá-los, por motivo de conveniência ou oportunidade, respeitados os direitos adquiridos, e ressalvada, em todos os casos, a apreciação judicial.","dispositivos":[]}
+]},
+{"id":"sumstj","grupo":"sumulas","sigla":"STJ","nomeCurto":"Súmulas do STJ","titulo":"Súmulas do Superior Tribunal de Justiça","cor":"#0F6E8C","rotuloItem":"Súmula","apelidos":"stj superior tribunal de justica sumula","fonte":"https://scon.stj.jus.br/docs_internet/VerbetesSTJ.pdf","blocos":[
+{"tipo":"artigo","id":"sum7","numero":"7","caput":"A pretensão de simples reexame de prova não enseja recurso especial.","dispositivos":[]},
+{"tipo":"artigo","id":"sum297","numero":"297","caput":"O Código de Defesa do Consumidor é aplicável às instituições financeiras.","dispositivos":[]},
+{"tipo":"artigo","id":"sum385","numero":"385","caput":"Da anotação irregular em cadastro de proteção ao crédito, não cabe indenização por dano moral, quando preexistente legítima inscrição, ressalvado o direito ao cancelamento.","dispositivos":[]}
+]}
+]}
+</script>
+
+<script>
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const app = $('#app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nfc = s => String(s ?? '').normalize('NFC');
+const norm = s => nfc(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const DIAS_RECENTE = 30;
+const LIMITE = 80;
+
+const ICO = {
+  voltar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  lupa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>',
+  sumario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>',
+  ajustes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19l5-14h1l5 14M6.2 13.5h7.6M16 19l2.6-7h.8L22 19"/></svg>',
+  estrela: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>',
+  copiar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>'
+};
+
+/* ---------- Preferências (salvas no aparelho) ---------- */
+const guardar = {
+  ler(k, padrao) { try { const v = localStorage.getItem('vm:' + k); return v === null ? padrao : JSON.parse(v); } catch (e) { return padrao; } },
+  gravar(k, v) { try { localStorage.setItem('vm:' + k, JSON.stringify(v)); } catch (e) { } }
+};
+const E = {
+  indice: null, leis: new Map(), demo: false, mudancas: [], pilha: [],
+  favs: guardar.ler('favs', []), marcas: guardar.ler('marcas', {}), fonte: guardar.ler('fonte', 1), tema: guardar.ler('tema', 'auto'), fundo: guardar.ler('fundo', 'papel'), leitura: guardar.ler('leitura', {})
+};
+function aplicarPrefs() {
+  const r = document.documentElement;
+  if (E.tema === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', E.tema);
+  if (E.fundo === 'branco') r.setAttribute('data-fundo', 'branco'); else r.removeAttribute('data-fundo');
+  r.style.setProperty('--fs', E.fonte);
+  document.querySelectorAll('[data-acao="fundo"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.valor === E.fundo)));
+  const out = $('#fonte-val'); if (out) out.textContent = Math.round(E.fonte * 100) + '%';
+  document.querySelectorAll('[data-acao="tema"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.valor === E.tema)));
+}
+
+/* ---------- Dados ---------- */
+async function obterJson(url) {
+  const r = await fetch(url, { cache: 'no-cache' });
+  if (!r.ok) throw new Error(url + ' ' + r.status);
+  return r.json();
+}
+function rotItem(L, a) { return (L.rotuloItem || 'Art.') + ' ' + a.numero; }
+function corpoItem(a) {
+  return [a.caput || ''].concat((a.dispositivos || []).map(d => rotuloFmt(d) + ' ' + d.texto)).join('\n');
+}
+function textoItem(L, a) { return rotItem(L, a) + ' ' + corpoItem(a); }
+function prepararLei(l) {
+  for (const b of l.blocos) if (b.tipo === 'artigo') { b._corpo = nfc(corpoItem(b)); b._nc = norm(b._corpo); }
+  return l;
+}
+function recente(a) { return !!a.alteradoEm && (Date.now() - new Date(a.alteradoEm + 'T12:00:00')) / 864e5 <= DIAS_RECENTE; }
+function resumoLei(l) {
+  const arts = l.blocos.filter(b => b.tipo === 'artigo');
+  return { id: l.id, grupo: l.grupo, rotuloItem: l.rotuloItem, sigla: l.sigla, nomeCurto: l.nomeCurto, titulo: l.titulo, cor: l.cor, apelidos: l.apelidos,
+    totalArtigos: arts.length, alteracoesRecentes: arts.filter(recente).length };
+}
+function usarDemo() {
+  const d = JSON.parse($('#dados-demo').textContent);
+  E.demo = true;
+  d.leis.forEach(l => E.leis.set(l.id, prepararLei(l)));
+  E.indice = { verificadoEm: d.verificadoEm, leis: d.leis.map(resumoLei), pendentes: d.pendentes || [] };
+}
+async function lei(id) {
+  if (E.leis.has(id)) return E.leis.get(id);
+  const l = prepararLei(await obterJson('data/leis/' + encodeURIComponent(id) + '.json'));
+  E.leis.set(id, l);
+  return l;
+}
+const infoLei = id => E.indice.leis.find(l => l.id === id);
+
+/* ---------- Formatação ---------- */
+function dataLonga(iso) { return iso ? new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''; }
+function dataCurta(iso) { return iso ? new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }) : ''; }
+function rotuloFmt(d) { return d.tipo === 'inciso' ? d.rotulo + ' –' : d.rotulo; }
+function plural(n, um, varios) { return n + ' ' + (n === 1 ? um : varios); }
+
+/* ---------- Telas ---------- */
+function telaInicio() {
+  document.title = 'Vade Mecum';
+  const I = E.indice;
+  app.innerHTML = `<div class="wrap">
+    <header class="topo"><h1 class="marca-app">Vade Mecum</h1>
+      <button class="ico" data-acao="ajustes" aria-label="Ajustes de leitura">${ICO.ajustes}</button></header>
+    <p class="verif">${I.verificadoEm ? 'Leis conferidas com o Planalto em ' + dataLonga(I.verificadoEm) : 'Legislação brasileira para consulta rápida'}</p>
+    <button class="campo-busca" data-acao="busca">${ICO.lupa}<span>Buscar artigo ou palavra</span></button>
+    ${E.demo ? '<p class="aviso">Você está vendo uma amostra com alguns artigos. Os textos completos aparecem quando o robô de atualização rodar pela primeira vez.</p>' : ''}
+    ${continuarHtml()}
+    <h2 class="secao">Leis</h2>
+    <nav class="estante" aria-label="Leis">${I.leis.filter(l => l.grupo !== 'sumulas').map(livroHtml).join('')}${(I.pendentes || []).map(pendenteHtml).join('')}</nav>
+    ${I.leis.some(l => l.grupo === 'sumulas') ? `<h2 class="secao">Súmulas</h2>
+    <nav class="estante" aria-label="Súmulas">${I.leis.filter(l => l.grupo === 'sumulas').map(livroHtml).join('')}</nav>` : ''}
+    ${marcacoesHtml()}
+    ${favoritosHtml()}
+    ${mudancasHtml()}
+    <div style="height:48px"></div>
+  </div>`;
+}
+function livroHtml(l) {
+  return `<a class="livro" href="#/lei/${esc(l.id)}" style="--cor:${esc(l.cor)}">
+    <span class="lombada" aria-hidden="true"></span>
+    <span class="livro-sigla tinta-lei">${esc(l.sigla)}</span>
+    <span class="livro-info"><b>${esc(l.nomeCurto)}</b><span>${l.grupo === 'sumulas' ? plural(l.totalArtigos, 'súmula', 'súmulas') : plural(l.totalArtigos, 'artigo', 'artigos')}</span>
+      ${l.alteracoesRecentes ? `<span class="selo">${plural(l.alteracoesRecentes, 'mudança recente', 'mudanças recentes')}</span>` : ''}</span>
+  </a>`;
+}
+function continuarHtml() {
+  const ult = Object.entries(E.leitura).sort((a, b) => b[1].em - a[1].em)[0];
+  if (!ult) return '';
+  const [id, pos] = ult, info = infoLei(id);
+  if (!info) return '';
+  return `<a class="continuar" href="#/lei/${esc(id)}" style="--cor:${esc(info.cor)}">
+    <span><span class="c1">Continuar lendo</span><span class="c2"><span class="tinta-lei">${esc(info.sigla)}</span>, ${esc(pos.rot)}</span></span>${ICO.voltar}</a>`;
+}
+function pendenteHtml(l) {
+  return `<div class="livro pendente" style="--cor:${esc(l.cor)}"><span class="lombada" aria-hidden="true"></span>
+    <span class="livro-sigla tinta-lei">${esc(l.sigla)}</span>
+    <span class="livro-info"><b>${esc(l.nomeCurto)}</b><span>Chega na primeira atualização</span></span></div>`;
+}
+function marcacoesHtml() {
+  const grupos = new Map();
+  for (const m of Object.values(E.marcas).flat()) {
+    const g = m.grupo || m.id;
+    if (!grupos.has(g)) grupos.set(g, { ...m, trechos: [] });
+    grupos.get(g).trechos.push(m.trecho);
+  }
+  const todas = [...grupos.values()].map(g => ({ ...g, trecho: g.trechos.join(' ') })).sort((a, b) => (b.em || 0) - (a.em || 0)).slice(0, 12);
+  if (!todas.length) return '';
+  return `<h2 class="secao">Marcações</h2><ul class="lista">${todas.map(m => `<li><a href="#/lei/${esc(m.lei)}/${esc(m.art)}">
+    <span class="ref"><span class="ponto" style="background:var(--hl-${esc(m.cor)})"></span>${esc(m.sigla)}, ${esc(m.rot || 'Art. ' + m.numero)}</span>
+    <span class="trecho">${esc(m.trecho)}</span></a></li>`).join('')}</ul>`;
+}
+function favoritosHtml() {
+  if (!E.favs.length) return '';
+  return `<h2 class="secao">Favoritos</h2><ul class="lista">${E.favs.map(f => `<li><a href="#/lei/${esc(f.lei)}/${esc(f.art)}">
+    <span class="ref">${esc(f.sigla)}, ${esc(f.rot || 'Art. ' + f.numero)}</span><span class="trecho">${esc(f.trecho)}</span></a></li>`).join('')}</ul>`;
+}
+function mudancasHtml() {
+  const m = (E.mudancas || []).slice(0, 12);
+  if (!m.length) return '';
+  const verbo = { alterado: 'Alterado', incluido: 'Incluído', revogado: 'Revogado', removido: 'Retirado do texto' };
+  return `<h2 class="secao">Mudanças recentes</h2><ul class="lista">${m.map(x => `<li><a href="#/lei/${esc(x.lei)}/${esc(x.id)}">
+    <span class="ref">${esc(x.sigla)}, ${esc(((infoLei(x.lei) || {}).rotuloItem || 'Art.') + ' ' + x.numero)}</span>
+    <span class="trecho">${verbo[x.tipo] || 'Alterado'} em ${dataLonga(x.data)}</span></a></li>`).join('')}</ul>`;
+}
+
+async function telaLei(id, alvo) {
+  const atual = $('.leitor');
+  if (atual && atual.dataset.lei === id) { if (alvo) irPara(alvo); return; }
+  app.innerHTML = '<p class="wrap carregando">Abrindo a lei…</p>';
+  let L;
+  try { L = await lei(id); } catch (e) {
+    app.innerHTML = `<div class="wrap"><p class="vazio">Esta lei não pôde ser aberta. Confira sua conexão e tente de novo.</p><p><a href="#/">Voltar à biblioteca</a></p></div>`;
+    return;
+  }
+  document.title = L.sigla + ' | Vade Mecum';
+  const info = infoLei(id) || {};
+  const nItens = L.blocos.filter(b => b.tipo === 'artigo').length;
+  const meta = [L.grupo === 'sumulas' ? plural(nItens, 'súmula', 'súmulas') : plural(nItens, 'artigo', 'artigos')];
+  if (L.alteradoEm) meta.push('última mudança em ' + dataLonga(L.alteradoEm));
+  app.innerHTML = `<div class="leitor" data-lei="${esc(L.id)}" style="--cor:${esc(L.cor)}">
+    <header class="barra"><div class="barra-in">
+      <button class="ico" data-acao="voltar" aria-label="Voltar">${ICO.voltar}</button>
+      <div class="barra-tit"><strong class="tinta-lei">${esc(L.sigla)}</strong><span>${esc(L.nomeCurto)}</span></div>
+      <button class="ico" data-acao="sumario" aria-label="Sumário">${ICO.sumario}</button>
+      <button class="ico" data-acao="busca" aria-label="Buscar">${ICO.lupa}</button>
+      <button class="ico" data-acao="ajustes" aria-label="Ajustes de leitura">${ICO.ajustes}</button>
+    </div></header>
+    <div class="wrap texto">
+      ${E.demo ? '<p class="aviso" style="font-family:var(--sans)">Amostra com alguns trechos. O texto integral chega na primeira atualização.</p>' : ''}
+      <h1 class="lei-tit">${esc(L.titulo)}</h1>
+      <p class="lei-meta">${meta.join(', ')}</p>
+      ${L.blocos.map(b => b.tipo === 'artigo' ? artigoHtml(L, b) : cabHtml(b)).join('')}
+      <p class="lei-fonte">${L.grupo === 'sumulas' ? 'Enunciados obtidos no site do tribunal. Em caso de divergência, vale a publicação oficial.' : 'Texto compilado a partir do site do Planalto. Em caso de divergência, vale a publicação oficial no Diário Oficial da União.'}
+        ${L.fonte ? `<a href="${esc(L.fonte)}" target="_blank" rel="noopener">Abrir a fonte</a>` : ''}</p>
+    </div></div>`;
+  const salvo = E.leitura[L.id];
+  if (alvo) irPara(alvo);
+  else if (salvo && document.getElementById(salvo.id)) { irPara(salvo.id, false); toast('Continuando de ' + salvo.rot); }
+  else window.scrollTo(0, 0);
+}
+function cabHtml(b) {
+  return `<h2 class="cab n${b.nivel} tinta-lei" id="${esc(b.id)}"><span class="cab-rot">${esc(b.rotulo)}</span>${b.nome ? `<span class="cab-nome">${esc(b.nome)}</span>` : ''}</h2>`;
+}
+function nota(n) { return n ? `<span class="nota">${esc(n)}</span>` : ''; }
+function txHtml(texto, marcas) {
+  texto = texto || '';
+  const validas = [];
+  for (const m of marcas) {
+    if (texto.slice(m.ini, m.fim) !== m.trecho) { // texto da lei mudou: procura o trecho de novo
+      const i = texto.indexOf(m.trecho);
+      if (i < 0) continue;
+      m.ini = i; m.fim = i + m.trecho.length;
+    }
+    validas.push(m);
+  }
+  validas.sort((x, y) => x.ini - y.ini);
+  let h = '', c = 0;
+  for (const m of validas) {
+    if (m.ini < c) continue;
+    h += esc(texto.slice(c, m.ini)) + `<mark class="hl hl-${esc(m.cor)}" data-marca="${esc(m.id)}">${esc(texto.slice(m.ini, m.fim))}</mark>`;
+    c = m.fim;
+  }
+  return h + esc(texto.slice(c));
+}
+function artigoHtml(L, a) {
+  const ms = (E.marcas[L.id] || []).filter(m => m.art === a.id);
+  const fav = E.favs.some(f => f.lei === L.id && f.art === a.id);
+  const rec = recente(a);
+  const rot = rotItem(L, a);
+  return `<article class="art${a.revogado ? ' revogado' : ''}${rec ? ' recente' : ''}" id="${esc(a.id)}">
+    <div class="art-cab"><a class="art-num tinta-lei" href="#/lei/${esc(L.id)}/${esc(a.id)}">${esc(rot)}</a>
+      ${rec ? `<span class="selo">Alterado em ${dataCurta(a.alteradoEm)}</span>` : ''}
+      ${a.revogado && L.grupo === 'sumulas' ? '<span class="selo-cinza">Cancelada</span>' : ''}
+      <span class="art-acoes">
+        <button data-acao="fav" data-art="${esc(a.id)}" aria-pressed="${fav}" aria-label="Favoritar ${esc(rot)}">${ICO.estrela}</button>
+        <button data-acao="copiar" data-art="${esc(a.id)}" aria-label="Copiar ${esc(rot)}">${ICO.copiar}</button>
+      </span></div>
+    <p class="caput"><span class="tx" data-p="0">${txHtml(a.caput, ms.filter(m => m.p === 0))}</span>${nota(a.nota)}</p>
+    ${(a.dispositivos || []).map((d, i) => `<p class="disp ${esc(d.tipo)}${d.revogado ? ' revogado' : ''}"><span class="rot">${esc(rotuloFmt(d))}</span> <span class="tx" data-p="${i + 1}">${txHtml(d.texto, ms.filter(m => m.p === i + 1))}</span>${nota(d.nota)}</p>`).join('')}
+  </article>`;
+}
+function irPara(id, piscar = true) {
+  const el = document.getElementById(id);
+  if (!el) { toast('Esse trecho não foi encontrado nesta lei'); return; }
+  el.scrollIntoView({ block: 'start' });
+  if (piscar && el.classList.contains('art')) { el.classList.remove('pisca'); void el.offsetWidth; el.classList.add('pisca'); }
+}
+
+/* ---------- Busca ---------- */
+function telaBusca(q = '') {
+  document.title = 'Buscar | Vade Mecum';
+  app.innerHTML = `<header class="barra neutra"><div class="barra-in">
+      <button class="ico" data-acao="voltar" aria-label="Voltar">${ICO.voltar}</button>
+      <label class="campo-busca compacto">${ICO.lupa}<span class="sr">Buscar</span>
+        <input id="q" type="search" value="${esc(q)}" placeholder="Artigo ou palavra" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></label>
+    </div></header>
+    <div class="wrap"><div id="res"></div></div>`;
+  const inp = $('#q');
+  let t;
+  inp.addEventListener('input', () => {
+    clearTimeout(t);
+    t = setTimeout(() => { history.replaceState(null, '', '#/busca/' + encodeURIComponent(inp.value)); E.pilha[E.pilha.length - 1] = location.hash; executarBusca(inp.value); }, 160);
+  });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
+  executarBusca(q);
+  return inp;
+}
+function dicasHtml() {
+  const ex = ['art. 5 cf', 'súmula 473', 'sv 11', 'nascituro', 'dignidade da pessoa humana'];
+  return `<div class="dicas"><p>Digite o número do artigo, com ou sem a sigla da lei, ou qualquer palavra do texto.</p>
+    ${ex.map(x => `<button data-acao="exemplo" data-valor="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;
+}
+async function executarBusca(q) {
+  const res = $('#res'); if (!res) return;
+  if (norm(q).trim().length < 2) { res.innerHTML = dicasHtml(); return; }
+  if (E.leis.size < E.indice.leis.length) {
+    res.innerHTML = '<p class="vazio">Preparando a busca em todas as leis…</p>';
+    try { await Promise.all(E.indice.leis.map(l => lei(l.id))); }
+    catch (e) { res.innerHTML = '<p class="vazio">Algumas leis não foram carregadas. Confira sua conexão e tente de novo.</p>'; return; }
+  }
+  if (($('#q') || {}).value !== q) return;
+  const r = buscar(q);
+  res.innerHTML = r.length
+    ? `<p class="contagem">${r.length >= LIMITE ? 'Mais de ' + LIMITE + ' resultados' : plural(r.length, 'resultado', 'resultados')}</p>` + r.map(resultadoHtml).join('')
+    : `<p class="vazio">Nenhum artigo encontrado para “${esc(q)}”. Tente outra palavra ou o número do artigo, como art. 5.</p>`;
+}
+function buscar(q) {
+  const nq = norm(q).replace(/[º°ª]/g, '').trim();
+  const out = [];
+  const leis = E.indice.leis.map(i => E.leis.get(i.id)).filter(Boolean);
+  const ms = nq.match(/^(sumula\s+vinculante|sv|sumula|sum\.?)\s*(?:n\.?\s*)?(\d{1,4})\b\s*(.*)$/);
+  if (ms) {
+    const vinc = ms[1] !== 'sumula' && ms[1].replace('.', '') !== 'sum';
+    const resto = ms[3].replace(/^d[oa]s?\s+/, '').trim();
+    for (const L of leis) {
+      if (L.grupo !== 'sumulas') continue;
+      if (vinc && L.id !== 'svstf') continue;
+      if (resto && !norm(L.sigla + ' ' + (L.apelidos || '') + ' ' + L.nomeCurto).includes(resto)) continue;
+      const a = L.blocos.find(b => b.id === 'sum' + ms[2]);
+      if (a) out.push({ L, a, termos: [] });
+    }
+    return out;
+  }
+  const m = nq.match(/^art(?:igo|s)?\.?\s*(\d{1,4}(?:\.\d{3})?)(?:\s*-\s*([a-z]{1,2}))?\b\s*(.*)$/);
+  if (m) {
+    const id = 'art' + m[1].replace('.', '') + (m[2] ? '-' + m[2] : '');
+    const resto = m[3].replace(/^(d[oa]s?|da|do)\s+/, '').trim();
+    for (const L of leis) {
+      if (L.grupo === 'sumulas') continue;
+      if (resto && !norm(L.sigla + ' ' + (L.apelidos || '') + ' ' + L.nomeCurto).includes(resto)) continue;
+      const a = L.blocos.find(b => b.id === id);
+      if (a) out.push({ L, a, termos: [] });
+    }
+    if (out.length || !resto) return out;
+  }
+  const termos = nq.split(/\s+/).filter(t => t.length > 1);
+  if (!termos.length) return out;
+  for (const L of leis) {
+    for (const a of L.blocos) {
+      if (a.tipo !== 'artigo' || !termos.every(t => a._nc.includes(t))) continue;
+      out.push({ L, a, termos });
+      if (out.length >= LIMITE) return out;
+    }
+  }
+  return out;
+}
+function trechoDestacado(txt, n, termos) {
+  if (!termos.length || n.length !== txt.length) return esc(txt.length > 240 ? txt.slice(0, 240) + '…' : txt);
+  const pos = n.indexOf(termos[0]);
+  let ini = Math.max(0, pos - 70), fim = Math.min(txt.length, pos + 170);
+  if (ini > 0) { const e = txt.indexOf(' ', ini); if (e > -1 && e < pos) ini = e + 1; }
+  if (fim < txt.length) { const e = txt.lastIndexOf(' ', fim); if (e > pos) fim = e; }
+  const faixas = [];
+  for (const t of termos) { let i = n.indexOf(t, ini); while (i !== -1 && i < fim) { faixas.push([i, Math.min(i + t.length, fim)]); i = n.indexOf(t, i + t.length); } }
+  faixas.sort((x, y) => x[0] - y[0]);
+  let html = ini > 0 ? '…' : '', c = ini;
+  for (const [a, b] of faixas) { if (a < c) continue; html += esc(txt.slice(c, a)) + '<mark>' + esc(txt.slice(a, b)) + '</mark>'; c = b; }
+  return html + esc(txt.slice(c, fim)) + (fim < txt.length ? '…' : '');
+}
+function resultadoHtml({ L, a, termos }) {
+  const corpo = a._corpo, nCorpo = a._nc;
+  return `<a class="res" href="#/lei/${esc(L.id)}/${esc(a.id)}" style="--cor:${esc(L.cor)}">
+    <span class="res-ref"><span class="sig tinta-lei">${esc(L.sigla)}</span><span>${esc(rotItem(L, a))}</span>${recente(a) ? '<span class="selo">alterado</span>' : ''}</span>
+    <span class="res-txt">${trechoDestacado(corpo, nCorpo, termos)}</span></a>`;
+}
+
+/* ---------- Ações ---------- */
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 1800);
+}
+async function copiar(texto) {
+  try { await navigator.clipboard.writeText(texto); return true; } catch (e) {
+    const ta = document.createElement('textarea'); ta.value = texto; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e2) { }
+    ta.remove(); return ok;
+  }
+}
+function abrirBusca(q = '') {
+  history.pushState(null, '', '#/busca/' + encodeURIComponent(q)); E.pilha.push(location.hash);
+  const inp = telaBusca(q); inp.focus();
+}
+function abrirSumario() {
+  const L = E.leis.get(($('.leitor') || {}).dataset?.lei); if (!L) return;
+  const cabs = L.blocos.filter(b => b.tipo === 'titulo');
+  $('#lista-indice').innerHTML = cabs.length
+    ? cabs.map(b => `<a class="n${b.nivel}" href="#/lei/${esc(L.id)}/${esc(b.id)}" data-acao="fechar-nav"><small>${esc(b.rotulo)}</small>${esc(b.nome || '')}</a>`).join('')
+    : '<p class="vazio">Esta lei não tem divisões em títulos ou capítulos.</p>';
+  $('#dlg-indice').showModal();
+}
+document.addEventListener('click', async e => {
+  const hl = e.target.closest('mark.hl');
+  if (hl && getSelection().isCollapsed) {
+    const L = E.leis.get(($('.leitor') || {}).dataset?.lei);
+    const m = L && (E.marcas[L.id] || []).find(x => x.id === hl.dataset.marca);
+    if (m) { clearTimeout(M.timer); M.ativa = m; M.pendente = null; mostrarBarra(true, true); return; }
+  }
+  const el = e.target.closest('[data-acao]');
+  if (!el) { if (M.ativa && !e.target.closest('#barra-marca')) fecharMarca(); return; }
+  const acao = el.dataset.acao;
+  if (acao === 'marcar') return marcar(el.dataset.valor);
+  if (acao === 'desmarcar') return desmarcar();
+  if (acao === 'fechar-marca') return fecharMarca();
+  if (acao === 'busca') { e.preventDefault(); abrirBusca(''); }
+  else if (acao === 'exemplo') { const inp = $('#q'); inp.value = el.dataset.valor; inp.dispatchEvent(new Event('input')); }
+  else if (acao === 'voltar') { if (E.pilha.length > 1) history.back(); else location.replace('#/'); }
+  else if (acao === 'sumario') abrirSumario();
+  else if (acao === 'ajustes') { aplicarPrefs(); $('#dlg-ajustes').showModal(); }
+  else if (acao === 'fechar') el.closest('dialog').close();
+  else if (acao === 'fechar-nav') el.closest('dialog').close();
+  else if (acao === 'fundo') { E.fundo = el.dataset.valor; guardar.gravar('fundo', E.fundo); aplicarPrefs(); }
+  else if (acao === 'tema') { E.tema = el.dataset.valor; guardar.gravar('tema', E.tema); aplicarPrefs(); }
+  else if (acao === 'fonte') {
+    E.fonte = Math.min(1.6, Math.max(0.8, Math.round((E.fonte + Number(el.dataset.valor) * 0.1) * 10) / 10));
+    guardar.gravar('fonte', E.fonte); aplicarPrefs();
+  }
+  else if (acao === 'fav' || acao === 'copiar') {
+    const L = E.leis.get($('.leitor').dataset.lei);
+    const a = L.blocos.find(b => b.id === el.dataset.art);
+    if (acao === 'copiar') {
+      const ok = await copiar(textoItem(L, a) + '\n(' + L.sigla + ')');
+      toast(ok ? rotItem(L, a) + ' copiado' : 'Não foi possível copiar');
+    } else {
+      const i = E.favs.findIndex(f => f.lei === L.id && f.art === a.id);
+      if (i >= 0) { E.favs.splice(i, 1); el.setAttribute('aria-pressed', 'false'); toast('Removido dos favoritos'); }
+      else {
+        E.favs.unshift({ lei: L.id, art: a.id, sigla: L.sigla, numero: a.numero, rot: rotItem(L, a), trecho: (a.caput || '').slice(0, 160) });
+        el.setAttribute('aria-pressed', 'true'); toast('Salvo nos favoritos');
+      }
+      guardar.gravar('favs', E.favs);
+    }
+  }
+});
+document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+
+/* ---------- Marcações coloridas ---------- */
+const M = { pendente: null, ativa: null, timer: 0, calc: 0 };
+const barraMarca = $('#barra-marca');
+function mostrarBarra(on, edicao = false) {
+  barraMarca.classList.toggle('on', on);
+  barraMarca.querySelector('[data-acao="desmarcar"]').hidden = !edicao;
+  const corAtiva = edicao && M.ativa ? M.ativa.cor : null;
+  barraMarca.querySelectorAll('.cor').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.valor === corAtiva)));
+}
+function offsetEm(tx, no, off) { const r = document.createRange(); r.selectNodeContents(tx); r.setEnd(no, off); return r.toString().length; }
+function lerSelecao() {
+  const s = getSelection();
+  const leitor = $('.leitor');
+  if (!s.rangeCount || s.isCollapsed || !leitor) return null;
+  const r = s.getRangeAt(0);
+  if (!leitor.contains(r.commonAncestorContainer)) return null;
+  const segs = [];
+  for (const tx of leitor.querySelectorAll('.tx')) {
+    if (!r.intersectsNode(tx)) continue;
+    const t = tx.textContent;
+    let ini = tx.contains(r.startContainer) ? offsetEm(tx, r.startContainer, r.startOffset) : 0;
+    let fim = tx.contains(r.endContainer) ? offsetEm(tx, r.endContainer, r.endOffset) : t.length;
+    while (ini < fim && /\s/.test(t[ini])) ini++;
+    while (fim > ini && /\s/.test(t[fim - 1])) fim--;
+    if (fim > ini) segs.push({ art: tx.closest('.art').id, p: Number(tx.dataset.p), ini, fim, trecho: t.slice(ini, fim) });
+  }
+  return segs.length ? segs : null;
+}
+document.addEventListener('selectionchange', () => {
+  clearTimeout(M.calc);
+  M.calc = setTimeout(() => {
+    const segs = lerSelecao();
+    if (segs) { clearTimeout(M.timer); M.pendente = segs; M.ativa = null; mostrarBarra(true); }
+    else if (!M.ativa) {
+      // espera um instante: no celular, tocar na barra desfaz a seleção antes do clique
+      clearTimeout(M.timer);
+      M.timer = setTimeout(() => { M.pendente = null; if (!M.ativa) mostrarBarra(false); }, 450);
+    }
+  }, 120);
+});
+barraMarca.addEventListener('mousedown', e => e.preventDefault());
+function salvarMarcas() { guardar.gravar('marcas', E.marcas); }
+function redesenharArtigos(L, ids) {
+  for (const id of new Set(ids)) {
+    const el = document.getElementById(id), a = L.blocos.find(b => b.id === id);
+    if (el && a) el.outerHTML = artigoHtml(L, a);
+  }
+}
+function fecharMarca() { M.pendente = null; M.ativa = null; mostrarBarra(false); try { getSelection().removeAllRanges(); } catch (e) { } }
+function marcar(cor) {
+  const L = E.leis.get(($('.leitor') || {}).dataset?.lei); if (!L) return fecharMarca();
+  const lista = E.marcas[L.id] || (E.marcas[L.id] = []);
+  if (M.ativa) {
+    const g = M.ativa.grupo || M.ativa.id;
+    const doGrupo = lista.filter(x => (x.grupo || x.id) === g);
+    doGrupo.forEach(x => { x.cor = cor; });
+    salvarMarcas(); redesenharArtigos(L, doGrupo.map(x => x.art));
+    return fecharMarca();
+  }
+  if (!M.pendente) return fecharMarca();
+  const grupo = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  for (const s of M.pendente) {
+    // nova marcação substitui as que se sobrepõem no mesmo trecho
+    for (let i = lista.length - 1; i >= 0; i--) {
+      const x = lista[i];
+      if (x.art === s.art && x.p === s.p && x.ini < s.fim && x.fim > s.ini) lista.splice(i, 1);
+    }
+    const a = L.blocos.find(b => b.id === s.art);
+    lista.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), lei: L.id, sigla: L.sigla,
+      numero: a.numero, rot: rotItem(L, a), grupo, art: s.art, p: s.p, ini: s.ini, fim: s.fim, trecho: s.trecho, cor, em: Date.now() });
+  }
+  salvarMarcas();
+  redesenharArtigos(L, M.pendente.map(s => s.art));
+  fecharMarca();
+  toast('Trecho marcado');
+}
+function desmarcar() {
+  const L = E.leis.get(($('.leitor') || {}).dataset?.lei);
+  if (L && M.ativa) {
+    const lista = E.marcas[L.id] || [];
+    const g = M.ativa.grupo || M.ativa.id;
+    const removidas = lista.filter(x => (x.grupo || x.id) === g);
+    E.marcas[L.id] = lista.filter(x => (x.grupo || x.id) !== g);
+    if (removidas.length) { salvarMarcas(); redesenharArtigos(L, removidas.map(x => x.art)); toast('Marcação removida'); }
+  }
+  fecharMarca();
+}
+
+/* ---------- Continuar de onde parou ---------- */
+let leituraTimer = 0;
+window.addEventListener('scroll', () => {
+  clearTimeout(leituraTimer);
+  leituraTimer = setTimeout(() => {
+    const leitor = $('.leitor'); if (!leitor) return;
+    const L = E.leis.get(leitor.dataset.lei); if (!L) return;
+    if (window.scrollY < 150) { delete E.leitura[L.id]; guardar.gravar('leitura', E.leitura); return; }
+    const barra = leitor.querySelector('.barra').getBoundingClientRect();
+    const texto = leitor.querySelector('.texto').getBoundingClientRect();
+    let alvo = null;
+    for (let y = barra.bottom + 8; y < barra.bottom + 160 && !alvo; y += 16) {
+      const el = document.elementFromPoint(texto.left + Math.min(40, texto.width / 4), y);
+      alvo = el && el.closest('.art, .cab');
+    }
+    if (!alvo) return;
+    let rot;
+    if (alvo.classList.contains('art')) rot = rotItem(L, L.blocos.find(b => b.id === alvo.id));
+    else { const c = L.blocos.find(b => b.id === alvo.id); rot = c ? c.rotulo.replace(/^(\S)(\S*)/, (_, x, y) => x + y.toLowerCase()) : 'início'; }
+    E.leitura[L.id] = { id: alvo.id, rot, em: Date.now() };
+    guardar.gravar('leitura', E.leitura);
+  }, 350);
+}, { passive: true });
+
+/* ---------- Rotas ---------- */
+function registrarPilha() {
+  const h = location.hash || '#/';
+  if (E.pilha.length > 1 && E.pilha[E.pilha.length - 2] === h) E.pilha.pop();
+  else if (E.pilha[E.pilha.length - 1] !== h) E.pilha.push(h);
+}
+function rota() {
+  registrarPilha();
+  if (M.pendente || M.ativa) fecharMarca();
+  const partes = decodeURIComponent(location.hash.slice(1) || '/').split('/').filter(Boolean);
+  if (partes[0] === 'lei' && partes[1]) telaLei(partes[1], partes[2]);
+  else if (partes[0] === 'busca') { if (!$('#q')) telaBusca(partes.slice(1).join('/')); }
+  else { telaInicio(); window.scrollTo(0, 0); }
+}
+
+async function iniciar() {
+  aplicarPrefs();
+  try {
+    E.indice = await obterJson('data/indice.json');
+    try { E.mudancas = await obterJson('data/mudancas.json'); } catch (e) { }
+  } catch (e) { usarDemo(); }
+  window.addEventListener('hashchange', rota);
+  rota();
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });
+}
+iniciar();
+</script>
+</body>
+</html>
