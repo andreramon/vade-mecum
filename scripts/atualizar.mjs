@@ -1,6 +1,6 @@
 // Robô de atualização: baixa cada lei do Planalto, compara com a versão salva
 // e grava data/leis/<id>.json, data/indice.json e data/mudancas.json.
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { parsearHtml } from './parser.mjs';
 import { parsearSumulas, textoDeHtml } from './sumulas.mjs';
 
@@ -24,11 +24,18 @@ function decodificar(buf, contentType) {
   return new TextDecoder(cs).decode(buf);
 }
 
+// Cabeçalhos de navegador comum: alguns tribunais recusam (HTTP 403) quem se identifica como robô
+const NAVEGADOR = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,application/pdf,*/*;q=0.8',
+  'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.5'
+};
+
 async function baixar(url) {
   for (let tentativa = 1; ; tentativa++) {
     try {
       const r = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VadeMecumBot/1.0)', 'Accept-Language': 'pt-BR' },
+        headers: { ...NAVEGADOR, 'Referer': new URL(url).origin + '/' },
         signal: AbortSignal.timeout(90_000)
       });
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -40,8 +47,24 @@ async function baixar(url) {
   }
 }
 
+// Plano B: arquivo enviado à mão para a pasta fontes/ (ex.: fontes/sumstj.pdf)
+async function arquivoManual(id) {
+  for (const ext of ['pdf', 'html', 'htm']) {
+    const url = new URL(`fontes/${id}.${ext}`, RAIZ);
+    try { await access(url); return { bytes: new Uint8Array(await readFile(url)), tipo: ext === 'pdf' ? 'application/pdf' : 'text/html' }; } catch { }
+  }
+  return null;
+}
+
 async function obterBlocos(f) {
-  const { bytes, tipo } = await baixar(f.url);
+  let arquivo;
+  try { arquivo = await baixar(f.url); }
+  catch (e) {
+    arquivo = await arquivoManual(f.id);
+    if (!arquivo) throw new Error(`${e.message}. Plano B: envie o arquivo como fontes/${f.id}.pdf`);
+    console.log(`  site recusou (${e.message}); usando o arquivo enviado em fontes/`);
+  }
+  const { bytes, tipo } = arquivo;
   if (f.tipo !== 'sumulas') return parsearHtml(decodificar(bytes, tipo));
   let texto;
   if (f.formato === 'pdf' || /pdf/i.test(tipo)) {
