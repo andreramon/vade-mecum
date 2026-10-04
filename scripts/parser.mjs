@@ -3,7 +3,7 @@ import * as cheerio from 'cheerio';
 
 const RE_CAB = /^(PARTE\s+(?:GERAL|ESPECIAL)|LIVRO\s+(?:[IVXLC]+|COMPLEMENTAR)|T[IÍ]TULO\s+(?:[IVXLC]+(?:-[A-Z])?|[UÚ]NICO)|CAP[IÍ]TULO\s+(?:[IVXLC]+(?:-[A-Z])?|[UÚ]NICO)|SUBSE[CÇ][AÃ]O\s+(?:[IVXLC]+(?:-[A-Z])?|[UÚ]NICA)|SE[CÇ][AÃ]O\s+(?:[IVXLC]+(?:-[A-Z])?|[UÚ]NICA))(?![A-Za-zÀ-ú])\s*[-–—.]?\s*(.*)$/;
 const RE_ADCT = /^ATO DAS DISPOSI[CÇ][OÕ]ES CONSTITUCIONAIS TRANSIT[OÓ]RIAS/;
-const RE_ART = /^Art\.\s*(\d{1,4}(?:\.\d{3})?)\s*([º°oª])?(?:-([A-Z]{1,2}))?(?![a-zà-ú])\s*\.?\s*[-–—]?\s*(.*)$/;
+const RE_ART = /^(?:Art|ART|Artigo|ARTIGO)\.?\s*(\d{1,4}(?:\.\d{3})?)\s*([º°oª])?(?:-([A-Z]{1,2}))?(?![a-zà-ú])\s*\.?\s*[-–—]?\s*(.*)$/;
 const RE_PAR = /^(§\s*\d+\s*[º°o]?(?:-[A-Z]{1,2})?|Par[aá]grafo [uú]nico)\s*\.?\s*[-–—]?\s*(.*)$/i;
 const RE_INC = /^([IVXLCDM]+(?:-[A-Z])?)\s*[-–—]\s*(.*)$/;
 const RE_ALI = /^([a-z](?:-[A-Z])?)\)\s*(.*)$/;
@@ -35,19 +35,19 @@ const ehRevogado = (texto, nota) =>
   !texto || /^\(?\s*revogad[oa]/i.test(texto) || (/^\(Revogad/i.test(nota || '') && texto.replace(/[;.:\s]/g, '') === '');
 const maiusculas = t => /[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(t) && t === t.toUpperCase();
 
+const BLOCOS = 'p, div, h1, h2, h3, h4, h5, h6, li, td, th, tr, table, blockquote, center, section, article, dd, dt, pre';
+
+// Lê o texto da página inteira (não só os <p>), porque páginas antigas do Planalto
+// às vezes trazem artigos dentro de <div>, <font> ou direto no corpo.
 export function extrairLinhas(html) {
   const $ = cheerio.load(html);
-  $('strike, s, del, script, style').remove(); // texto riscado = redação revogada
+  $('strike, s, del, script, style, head').remove(); // texto riscado = redação revogada
+  $('*').contents().each((_, n) => { if (n.type === 'text') n.data = n.data.replace(/\s+/g, ' '); });
   $('br').replaceWith('\n');
-  const linhas = [];
-  $('p, h1, h2, h3, h4, h5, h6').each((_, el) => {
-    if ($(el).parents('p').length) return;
-    for (const parte of $(el).text().split('\n')) {
-      const t = parte.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim().normalize('NFC');
-      if (t) linhas.push(t);
-    }
-  });
-  return linhas;
+  $(BLOCOS).each((_, el) => { $(el).prepend('\n').append('\n'); });
+  return $.root().text().split('\n')
+    .map(t => t.replace(/\s+/g, ' ').trim().normalize('NFC'))
+    .filter(Boolean);
 }
 
 export function parsearHtml(html) {

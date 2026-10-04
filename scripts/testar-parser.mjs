@@ -57,10 +57,25 @@ assert.ok(art['adct-art1']);
 assert.ok(!art.art99, 'texto após a assinatura não deve entrar');
 console.log('Parser OK:', Object.keys(art).length, 'artigos,', cab.length, 'títulos');
 
+// Página antiga: artigos fora de <p>, em <div>, <font> e direto no corpo
+const antigo = parsearHtml(`<html><body><font face="Arial">
+<div>Art. 1º Primeiro artigo.</div>
+<div><font>Art. 2º Segundo artigo,
+que quebra a linha no código-fonte.</font></div>
+Art. 3º Terceiro artigo solto no corpo.<br>
+I - inciso do terceiro;
+<table><tr><td>ART. 4º Quarto em maiúsculas.</td></tr></table>
+<p>Art 5º Sem ponto depois de Art.</p>
+</font></body></html>`).filter(x => x.tipo === 'artigo');
+assert.deepEqual(antigo.map(a => a.id), ['art1', 'art2', 'art3', 'art4', 'art5']);
+assert.equal(antigo[1].caput, 'Segundo artigo, que quebra a linha no código-fonte.');
+assert.equal(antigo[2].dispositivos[0].texto, 'inciso do terceiro;');
+console.log('Páginas antigas OK');
+
 // Súmulas
 const sum = parsearSumulas(textoDeHtml(`<html><body>
 <p>Índice: Súmula 1, Súmula 7</p>
-<h3>SÚMULA 7</h3><p>A pretensão de simples reexame de prova não enseja recurso especial. (CORTE ESPECIAL, julgado em 28/06/1990, DJ 03/07/1990)</p>
+<h3>SÚMULA 7</h3><p>VEJA MAIS</p><p>A pretensão de simples reexame de prova não enseja recurso especial. (CORTE ESPECIAL, julgado em 28/06/1990, DJ 03/07/1990)</p>
 <h3>Súmula Vinculante 14</h3><p>É direito do defensor ter acesso amplo aos elementos de prova, conforme a Súmula 7 citada.</p><p>Precedentes Representativos: HC 88.190</p>
 <h3>SÚMULA 94</h3><p>(CANCELADA) A parcela relativa ao ICMS inclui-se na base de cálculo do FINSOCIAL.</p>
 </body></html>`));

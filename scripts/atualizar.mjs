@@ -8,6 +8,9 @@ const RAIZ = new URL('../', import.meta.url);
 const DADOS = new URL('data/', RAIZ);
 const hoje = new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Manaus' }); // AAAA-MM-DD
 const DIAS_RECENTE = 30;
+// Suba este número quando o leitor mudar a forma de extrair o texto:
+// a próxima execução reorganiza os arquivos sem marcar tudo como "alterado".
+const VERSAO_LEITOR = 2;
 const apenas = process.argv.slice(2); // ex.: node scripts/atualizar.mjs cf88
 
 async function lerJson(url, padrao = null) {
@@ -77,18 +80,18 @@ async function obterBlocos(f) {
 const assinatura = a => JSON.stringify([a.caput, !!a.revogado, (a.dispositivos || []).map(d => [d.rotulo, d.texto])]);
 const recente = a => a.alteradoEm && (new Date(hoje) - new Date(a.alteradoEm)) / 864e5 <= DIAS_RECENTE;
 
-function mesclar(blocos, anterior) {
+function mesclar(blocos, anterior, reformatar) {
   const antigos = new Map((anterior?.blocos || []).filter(b => b.tipo === 'artigo').map(a => [a.id, a]));
   const mudancas = [];
   for (const b of blocos) {
     if (b.tipo !== 'artigo') continue;
     const a = antigos.get(b.id);
     if (!a) {
-      if (anterior) { b.alteradoEm = hoje; mudancas.push({ tipo: 'incluido', id: b.id, numero: b.numero }); }
+      if (anterior && !reformatar) { b.alteradoEm = hoje; mudancas.push({ tipo: 'incluido', id: b.id, numero: b.numero }); }
       continue;
     }
     antigos.delete(b.id);
-    if (assinatura(a) !== assinatura(b)) {
+    if (!reformatar && assinatura(a) !== assinatura(b)) {
       b.alteradoEm = hoje;
       b.historico = [{ ate: hoje, caput: a.caput, nota: a.nota, dispositivos: a.dispositivos }, ...(a.historico || [])].slice(0, 5);
       mudancas.push({ tipo: b.revogado && !a.revogado ? 'revogado' : 'alterado', id: b.id, numero: b.numero });
@@ -97,6 +100,7 @@ function mesclar(blocos, anterior) {
       if (a.historico) b.historico = a.historico;
     }
   }
+  if (reformatar) return [];
   for (const a of antigos.values()) mudancas.push({ tipo: 'removido', id: a.id, numero: a.numero });
   return mudancas;
 }
@@ -122,13 +126,16 @@ async function main() {
       if (nArt < minimo) throw new Error(`só ${nArt} itens reconhecidos (mínimo ${minimo}); a fonte pode ter mudado de formato ou de endereço`);
       if (nAnt && nArt < nAnt * 0.8) throw new Error(`${nArt} artigos agora contra ${nAnt} antes; atualização suspensa por segurança`);
 
-      const mudancas = mesclar(blocos, anterior);
-      if (anterior && !mudancas.length) { console.log(`  sem mudanças (${nArt} itens)`); continue; }
+      const reformatar = !!anterior && anterior.versaoLeitor !== VERSAO_LEITOR;
+      const mudancas = mesclar(blocos, anterior, reformatar);
+      if (anterior && !mudancas.length && !reformatar) { console.log(`  sem mudanças (${nArt} itens)`); continue; }
 
       const { url, formato, minimo: _m, ...meta } = f;
-      await gravarJson(arquivo, { ...meta, fonte: url, alteradoEm: anterior ? hoje : undefined, verificadoEm: hoje, blocos });
+      await gravarJson(arquivo, { ...meta, fonte: url, versaoLeitor: VERSAO_LEITOR,
+        alteradoEm: reformatar ? anterior.alteradoEm : (anterior ? hoje : undefined), verificadoEm: hoje, blocos });
       if (anterior) log.unshift(...mudancas.map(m => ({ data: hoje, lei: f.id, sigla: f.sigla, ...m })));
-      console.log(anterior ? `  ${mudancas.length} mudança(s) registrada(s)` : `  primeira carga: ${nArt} itens`);
+      console.log(reformatar ? `  reorganizado pela nova versão do leitor: ${nAnt} → ${nArt} itens (sem marcar mudanças)`
+        : anterior ? `  ${mudancas.length} mudança(s) registrada(s)` : `  primeira carga: ${nArt} itens`);
     } catch (e) {
       falhas++;
       console.error(`  ✗ ${f.sigla}: ${e.message}`);

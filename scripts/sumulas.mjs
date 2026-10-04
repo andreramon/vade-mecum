@@ -14,7 +14,7 @@ export function textoDeHtml(html) {
 }
 
 function limpar(t) {
-  t = t.replace(/\s+/g, ' ').trim();
+  t = t.replace(/\bVEJA\s+MAIS\b/gi, ' ').replace(/\s+/g, ' ').trim();
   t = t.replace(/^[\s\-–—:.]+/, '').trim();
   const fim = t.search(RE_FIM);
   if (fim > 0) t = t.slice(0, fim).trim();
