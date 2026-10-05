@@ -187,6 +187,72 @@ dialog::backdrop{background:rgba(10,15,13,.45)}
 .continuar .c1{font-size:13px;color:var(--tinta2)}
 .continuar .c2{font-family:var(--serif);font-weight:600;font-size:18px}
 .continuar svg{margin-left:auto;width:20px;height:20px;transform:rotate(180deg);color:var(--tinta2);flex:none}
+/* Anotações */
+.nota-pessoal{margin:.7em 0 .2em;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--ouro) 13%,var(--sup));border-left:3px solid var(--ouro);font-family:var(--sans);font-size:.84em;line-height:1.55;white-space:pre-wrap;cursor:pointer}
+.np-rot{display:block;font-size:.82em;font-weight:600;color:var(--tinta2);margin-bottom:2px}
+dialog textarea{width:100%;min-height:150px;border:1px solid var(--linha);border-radius:12px;padding:12px;background:var(--papel);color:var(--tinta);font:inherit;font-size:16px;line-height:1.5;resize:vertical}
+.dlg-sub{margin:0 0 12px;color:var(--tinta2);font-size:14px}
+.dlg-botoes{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.btn,.btn-sec{min-height:44px;padding:0 18px;border-radius:12px;cursor:pointer;font-size:15px;font-weight:500}
+.btn{border:0;background:var(--tinta);color:var(--papel)}
+.btn-sec{border:1px solid var(--linha);background:transparent}
+.btn-sec.perigo{color:#B3261E}
+:root[data-theme="dark"] .btn-sec.perigo{color:#F2B8B5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn-sec.perigo{color:#F2B8B5}}
+/* Coleções */
+.col-lista{display:grid;gap:6px;margin-bottom:14px}
+.col-item{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:6px 12px;border:1px solid var(--linha);border-radius:12px;background:transparent;cursor:pointer;text-align:left}
+.col-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--linha);display:grid;place-items:center;flex:none}
+.col-check svg{width:15px;height:15px}
+.col-item[aria-pressed="true"] .col-check{background:var(--tinta);border-color:var(--tinta);color:var(--papel)}
+.col-nome{flex:1;font-weight:500}
+.col-qtd{color:var(--tinta2);font-size:14px}
+.col-nova{display:flex;gap:8px}
+.col-nova input,.col-renomear input{flex:1;min-width:0;min-height:44px;border:1px solid var(--linha);border-radius:12px;padding:0 12px;background:var(--papel);color:var(--tinta);font:inherit;font-size:16px}
+.colecoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.colecao{position:relative;display:flex;flex-direction:column;gap:2px;padding:20px 14px 14px;border-radius:4px 14px 14px 14px;background:var(--sup);border:1px solid var(--linha);text-decoration:none;min-height:86px}
+.colecao::before{content:"";position:absolute;top:-1px;left:-1px;width:56px;height:8px;border-radius:4px 8px 0 0;background:var(--ouro)}
+.c-nome{font-family:var(--serif);font-weight:600;font-size:17px;line-height:1.25}
+.c-qtd{color:var(--tinta2);font-size:13.5px;margin-top:auto}
+.col-acoes{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.col-renomear{display:flex;gap:8px;margin:0 0 16px}
+.col-linha{display:flex;align-items:center;gap:4px}
+.col-linha a{flex:1;min-width:0}
+.nota-mini{display:block;font-size:13px;color:var(--tinta2);margin-top:2px}
+/* Leitura em voz alta */
+.player{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160%);width:min(560px,calc(100% - 20px));display:flex;align-items:center;gap:6px;padding:8px 8px 8px 16px;border-radius:18px;background:var(--tinta);color:var(--papel);box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:14;transition:transform .2s ease-out}
+.player:not(.on){visibility:hidden;transition:transform .2s ease-out,visibility 0s .2s}
+.player.on{transform:translate(-50%,0)}
+@media (max-width:480px){.player{flex-wrap:wrap;justify-content:space-between;padding:10px 8px 4px 16px}.player .player-info{flex-basis:100%;margin-bottom:2px}
+body.tocando .texto,body.tocando .wrap{padding-bottom:150px}body.tocando .barra-marca{bottom:calc(128px + env(safe-area-inset-bottom,0px))}body.tocando .toast{bottom:calc(132px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){.player{transition:none}}
+.player-info{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.player-tit{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-sub{font-size:12.5px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player .ico{width:42px;height:42px;color:var(--papel)}
+.player .ico:hover{background:rgba(255,255,255,.12)}
+.player .vel{min-width:48px;height:36px;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:transparent;color:var(--papel);font-size:13.5px;font-weight:600;cursor:pointer}
+body.tocando .texto,body.tocando .wrap{padding-bottom:110px}
+body.tocando .barra-marca{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+body.tocando .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+.art.lendo,.col-linha.lendo{background:color-mix(in srgb,var(--foco) 10%,transparent);box-shadow:0 0 0 8px color-mix(in srgb,var(--foco) 10%,transparent)}
+/* Lado a lado */
+.so-tablet{display:none}
+@media (min-width:700px){.so-tablet{display:inline-grid}}
+.lado{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--papel);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.lado>.barra{position:static}
+.lado-paineis{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr}
+.painel{display:flex;flex-direction:column;min-height:0;min-width:0;border-left:1px solid var(--linha)}
+.painel:first-child{border-left:0}
+@media (max-width:699px){.lado-paineis{grid-template-columns:1fr;grid-template-rows:1fr 1fr}.painel{border-left:0;border-top:1px solid var(--linha)}.painel:first-child{border-top:0}}
+.painel-cab{display:flex;gap:6px;align-items:center;padding:8px 8px 8px 12px;border-bottom:3px solid var(--cor)}
+.painel-cab select,.painel-cab input{height:40px;border:1px solid var(--linha);border-radius:10px;background:var(--sup);color:var(--tinta);font:inherit;font-size:16px;padding:0 8px}
+.painel-cab select{flex:1;min-width:0}
+.painel-cab input{width:76px}
+.painel-rolagem{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.painel .texto{padding-left:18px;padding-right:18px}
+.painel .lei-tit{font-size:calc(21px * var(--fs));margin-top:18px}
+.painel .art,.painel .cab{scroll-margin-top:12px}
 .carregando{color:var(--tinta2);padding-top:40px}
 </style>
 </head>
@@ -223,6 +289,34 @@ dialog::backdrop{background:rgba(10,15,13,.45)}
     </div>
   </div>
 </dialog>
+
+<dialog id="dlg-nota" aria-labelledby="t-nota">
+  <div class="dlg-cab"><h2 id="t-nota">Anotação</h2><button class="ico" data-acao="fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dlg-corpo">
+    <p class="dlg-sub" id="nota-alvo"></p>
+    <label class="sr" for="nota-texto">Texto da anotação</label>
+    <textarea id="nota-texto" placeholder="Escreva sua anotação, por exemplo um resumo, uma dica de prova ou a jurisprudência que o professor citou."></textarea>
+    <div class="dlg-botoes">
+      <button class="btn-sec perigo" data-acao="nota-excluir">Excluir</button>
+      <button class="btn" data-acao="nota-salvar">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-colecao" aria-labelledby="t-colecao">
+  <div class="dlg-cab"><h2 id="t-colecao">Salvar em coleção</h2><button class="ico" data-acao="fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dlg-corpo">
+    <p class="dlg-sub" id="col-alvo"></p>
+    <div class="col-lista" id="col-lista"></div>
+    <div class="col-nova">
+      <label class="sr" for="col-nome">Nome da nova coleção</label>
+      <input id="col-nome" maxlength="60" placeholder="Nova coleção, ex.: Tributário – P2" enterkeyhint="done">
+      <button class="btn" data-acao="col-criar">Criar</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="player" id="player" role="region" aria-label="Leitura em voz alta"></div>
 
 <div class="toast" id="toast" role="status"></div>
 
@@ -298,6 +392,15 @@ const ICO = {
   sumario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>',
   ajustes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19l5-14h1l5 14M6.2 13.5h7.6M16 19l2.6-7h.8L22 19"/></svg>',
   estrela: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>',
+  ouvir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 010 6M18 6.5a7.5 7.5 0 010 11"/></svg>',
+  nota: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></svg>',
+  lado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M12 4.5v15"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+  pausa: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg>',
+  ant: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM19 5.5v13L9.5 12z"/></svg>',
+  prox: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM5 5.5v13L14.5 12z"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
   copiar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>'
 };
 
@@ -308,8 +411,14 @@ const guardar = {
 };
 const E = {
   indice: null, leis: new Map(), demo: false, mudancas: [], pilha: [],
-  favs: guardar.ler('favs', []), marcas: guardar.ler('marcas', {}), fonte: guardar.ler('fonte', 1), tema: guardar.ler('tema', 'auto'), fundo: guardar.ler('fundo', 'papel'), leitura: guardar.ler('leitura', {})
+  favs: guardar.ler('favs', []), marcas: guardar.ler('marcas', {}),
+  cols: guardar.ler('colecoes', null), notas: guardar.ler('notas', {}), fonte: guardar.ler('fonte', 1), tema: guardar.ler('tema', 'auto'), fundo: guardar.ler('fundo', 'papel'), leitura: guardar.ler('leitura', {})
 };
+// Favoritos antigos viram a coleção "Favoritos"
+if (!Array.isArray(E.cols)) {
+  E.cols = E.favs.length ? [{ id: 'favoritos', nome: 'Favoritos', itens: E.favs.map(f => ({ ...f, em: Date.now() })) }] : [];
+  guardar.gravar('colecoes', E.cols);
+}
 function aplicarPrefs() {
   const r = document.documentElement;
   if (E.tema === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', E.tema);
@@ -376,17 +485,19 @@ function telaInicio() {
   const I = E.indice;
   app.innerHTML = `<div class="wrap">
     <header class="topo"><h1 class="marca-app">Vade Mecum</h1>
-      <button class="ico" data-acao="ajustes" aria-label="Ajustes de leitura">${ICO.ajustes}</button></header>
+      <span><button class="ico so-tablet" data-acao="lado" aria-label="Duas leis lado a lado">${ICO.lado}</button>
+      <button class="ico" data-acao="ajustes" aria-label="Ajustes de leitura">${ICO.ajustes}</button></span></header>
     <p class="verif">${I.verificadoEm ? 'Leis conferidas com o Planalto em ' + dataLonga(I.verificadoEm) : 'Legislação brasileira para consulta rápida'}</p>
     <button class="campo-busca" data-acao="busca">${ICO.lupa}<span>Buscar lei, artigo ou palavra</span></button>
     ${E.demo ? '<p class="aviso">Você está vendo uma amostra com alguns artigos. Os textos completos aparecem quando o robô de atualização rodar pela primeira vez.</p>' : ''}
     ${continuarHtml()}
     <h2 class="secao">Leis</h2>
-    <nav class="estante" aria-label="Leis">${I.leis.filter(l => l.grupo !== 'sumulas').map(livroHtml).join('')}${(I.pendentes || []).map(pendenteHtml).join('')}</nav>
+    <nav class="estante" aria-label="Leis">${I.leis.filter(l => l.grupo !== 'sumulas').map(l => livroHtml(l)).join('')}${(I.pendentes || []).map(pendenteHtml).join('')}</nav>
     ${I.leis.some(l => l.grupo === 'sumulas') ? `<h2 class="secao">Súmulas</h2>
-    <nav class="estante" aria-label="Súmulas">${I.leis.filter(l => l.grupo === 'sumulas').map(livroHtml).join('')}</nav>` : ''}
+    <nav class="estante" aria-label="Súmulas">${I.leis.filter(l => l.grupo === 'sumulas').map(l => livroHtml(l)).join('')}</nav>` : ''}
+    ${colecoesHtml()}
+    ${anotacoesHtml()}
     ${marcacoesHtml()}
-    ${favoritosHtml()}
     ${mudancasHtml()}
     <div style="height:48px"></div>
   </div>`;
@@ -425,6 +536,22 @@ function marcacoesHtml() {
     <span class="ref"><span class="ponto" style="background:var(--hl-${esc(m.cor)})"></span>${esc(m.sigla)}, ${esc(m.rot || 'Art. ' + m.numero)}</span>
     <span class="trecho">${esc(m.trecho)}</span></a></li>`).join('')}</ul>`;
 }
+function colecoesHtml() {
+  if (!E.cols.length) return '';
+  return `<h2 class="secao">Coleções</h2><div class="colecoes">${E.cols.map(c => `<a class="colecao" href="#/colecao/${esc(c.id)}">
+    <span class="c-nome">${esc(c.nome)}</span><span class="c-qtd">${plural(c.itens.length, 'artigo', 'artigos')}</span></a>`).join('')}</div>`;
+}
+function todasNotas() {
+  const out = [];
+  for (const [lei, porArt] of Object.entries(E.notas)) for (const [art, n] of Object.entries(porArt)) out.push({ lei, art, ...n });
+  return out.sort((a, b) => b.em - a.em);
+}
+function anotacoesHtml() {
+  const ns = todasNotas().slice(0, 8);
+  if (!ns.length) return '';
+  return `<h2 class="secao">Anotações</h2><ul class="lista">${ns.map(n => `<li><a href="#/lei/${esc(n.lei)}/${esc(n.art)}">
+    <span class="ref">${esc(n.sigla)}, ${esc(n.rot)}</span><span class="trecho">${esc(n.texto)}</span></a></li>`).join('')}</ul>`;
+}
 function favoritosHtml() {
   if (!E.favs.length) return '';
   return `<h2 class="secao">Favoritos</h2><ul class="lista">${E.favs.map(f => `<li><a href="#/lei/${esc(f.lei)}/${esc(f.art)}">
@@ -440,7 +567,7 @@ function mudancasHtml() {
 }
 
 async function telaLei(id, alvo) {
-  const atual = $('.leitor');
+  const atual = $('.leitor.unico');
   if (atual && atual.dataset.lei === id) { if (alvo) irPara(alvo); return; }
   app.innerHTML = '<p class="wrap carregando">Abrindo a lei…</p>';
   let L;
@@ -452,12 +579,13 @@ async function telaLei(id, alvo) {
   const info = infoLei(id) || {};
   const meta = [faixaItens(info.id ? info : resumoLei(L))];
   if (L.alteradoEm) meta.push('última mudança em ' + dataLonga(L.alteradoEm));
-  app.innerHTML = `<div class="leitor" data-lei="${esc(L.id)}" style="--cor:${esc(L.cor)}">
+  app.innerHTML = `<div class="leitor unico" data-lei="${esc(L.id)}" data-pref="" style="--cor:${esc(L.cor)}">
     <header class="barra"><div class="barra-in">
       <button class="ico" data-acao="voltar" aria-label="Voltar">${ICO.voltar}</button>
       <div class="barra-tit"><strong class="tinta-lei">${esc(L.sigla)}</strong><span>${esc(L.nomeCurto)}</span></div>
       <button class="ico" data-acao="sumario" aria-label="Sumário">${ICO.sumario}</button>
       <button class="ico" data-acao="busca" aria-label="Buscar">${ICO.lupa}</button>
+      <button class="ico so-tablet" data-acao="lado" aria-label="Comparar com outra lei lado a lado">${ICO.lado}</button>
       <button class="ico" data-acao="ajustes" aria-label="Ajustes de leitura">${ICO.ajustes}</button>
     </div></header>
     <div class="wrap texto">
@@ -472,9 +600,10 @@ async function telaLei(id, alvo) {
   if (alvo) irPara(alvo);
   else if (salvo && document.getElementById(salvo.id)) { irPara(salvo.id, false); toast('Continuando de ' + salvo.rot); }
   else window.scrollTo(0, 0);
+  vozRealcar(false);
 }
-function cabHtml(b) {
-  return `<h2 class="cab n${b.nivel} tinta-lei" id="${esc(b.id)}"><span class="cab-rot">${esc(b.rotulo)}</span>${b.nome ? `<span class="cab-nome">${esc(b.nome)}</span>` : ''}</h2>`;
+function cabHtml(b, pref = '') {
+  return `<h2 class="cab n${b.nivel} tinta-lei" id="${esc(pref + b.id)}" data-id="${esc(b.id)}"><span class="cab-rot">${esc(b.rotulo)}</span>${b.nome ? `<span class="cab-nome">${esc(b.nome)}</span>` : ''}</h2>`;
 }
 function nota(n) { return n ? `<span class="nota">${esc(n)}</span>` : ''; }
 function txHtml(texto, marcas) {
@@ -497,25 +626,30 @@ function txHtml(texto, marcas) {
   }
   return h + esc(texto.slice(c));
 }
-function artigoHtml(L, a) {
+function artigoHtml(L, a, pref = '') {
   const ms = (E.marcas[L.id] || []).filter(m => m.art === a.id);
-  const fav = E.favs.some(f => f.lei === L.id && f.art === a.id);
+  const fav = naColecao(L.id, a.id);
   const rec = recente(a);
   const rot = rotItem(L, a);
-  return `<article class="art${a.revogado ? ' revogado' : ''}${rec ? ' recente' : ''}" id="${esc(a.id)}">
-    <div class="art-cab"><a class="art-num tinta-lei" href="#/lei/${esc(L.id)}/${esc(a.id)}">${esc(rot)}</a>
+  const np = notaDe(L.id, a.id);
+  const lendo = VOZ.ativa && VOZ.fila[VOZ.i] && VOZ.fila[VOZ.i].lei === L.id && VOZ.fila[VOZ.i].art === a.id;
+  return `<article class="art${a.revogado ? ' revogado' : ''}${rec ? ' recente' : ''}${lendo ? ' lendo' : ''}" id="${esc(pref + a.id)}" data-id="${esc(a.id)}">
+    <div class="art-cab">${pref ? `<span class="art-num tinta-lei">${esc(rot)}</span>` : `<a class="art-num tinta-lei" href="#/lei/${esc(L.id)}/${esc(a.id)}">${esc(rot)}</a>`}
       ${rec ? `<span class="selo">Alterado em ${dataCurta(a.alteradoEm)}</span>` : ''}
       ${a.revogado && L.grupo === 'sumulas' ? '<span class="selo-cinza">Cancelada</span>' : ''}
       <span class="art-acoes">
-        <button data-acao="fav" data-art="${esc(a.id)}" aria-pressed="${fav}" aria-label="Favoritar ${esc(rot)}">${ICO.estrela}</button>
+        ${temVoz ? `<button data-acao="ouvir" data-art="${esc(a.id)}" aria-label="Ouvir a partir do ${esc(rot)}">${ICO.ouvir}</button>` : ''}
+        <button data-acao="nota" data-art="${esc(a.id)}" aria-label="${np ? 'Editar' : 'Escrever'} anotação do ${esc(rot)}">${ICO.nota}</button>
+        <button data-acao="fav" data-art="${esc(a.id)}" aria-pressed="${fav}" aria-label="Salvar ${esc(rot)} em uma coleção">${ICO.estrela}</button>
         <button data-acao="copiar" data-art="${esc(a.id)}" aria-label="Copiar ${esc(rot)}">${ICO.copiar}</button>
       </span></div>
     <p class="caput"><span class="tx" data-p="0">${txHtml(a.caput, ms.filter(m => m.p === 0))}</span>${nota(a.nota)}</p>
     ${(a.dispositivos || []).map((d, i) => `<p class="disp ${esc(d.tipo)}${d.revogado ? ' revogado' : ''}"><span class="rot">${esc(rotuloFmt(d))}</span> <span class="tx" data-p="${i + 1}">${txHtml(d.texto, ms.filter(m => m.p === i + 1))}</span>${nota(d.nota)}</p>`).join('')}
+    ${np ? `<div class="nota-pessoal" data-acao="nota" data-art="${esc(a.id)}"><span class="np-rot">Sua anotação</span>${esc(np.texto)}</div>` : ''}
   </article>`;
 }
-function irPara(id, piscar = true) {
-  const el = document.getElementById(id);
+function irPara(id, piscar = true, raiz = null) {
+  const el = raiz ? raiz.querySelector(`[data-id="${id}"]`) : document.getElementById(id);
   if (!el) { toast('Esse trecho não foi encontrado nesta lei'); return; }
   el.scrollIntoView({ block: 'start' });
   if (piscar && el.classList.contains('art')) { el.classList.remove('pisca'); void el.offsetWidth; el.classList.add('pisca'); }
@@ -578,7 +712,11 @@ async function executarBusca(q) {
   // 1) Atalhos para abrir a lei (aparecem na hora, sem esperar carregar os textos)
   const atalhos = acharLeis(nq).slice(0, 4);
   if (atalhos.length === 1 || (atalhos.length && atalhos[0].p === 3 && atalhos[1].p < 3)) E.irDireto = '#/lei/' + atalhos[0].l.id;
-  const topo = atalhos.length ? `<div class="atalhos">${atalhos.map(x => livroHtml(x.l, true)).join('')}</div>` : '';
+  const termosNota = nq.split(/\s+/).filter(t => t.length > 1);
+  const notasAchadas = todasNotas().filter(n => termosNota.every(t => norm(n.texto + ' ' + n.sigla + ' ' + n.rot).includes(t))).slice(0, 10);
+  const topo = (atalhos.length ? `<div class="atalhos">${atalhos.map(x => livroHtml(x.l, true)).join('')}</div>` : '')
+    + (notasAchadas.length ? `<p class="subtitulo-busca">Nas suas anotações</p><ul class="lista">${notasAchadas.map(n => `<li><a href="#/lei/${esc(n.lei)}/${esc(n.art)}">
+      <span class="ref">${esc(n.sigla)}, ${esc(n.rot)}</span><span class="trecho">${esc(n.texto)}</span></a></li>`).join('')}</ul>` : '');
 
   if (E.leis.size < E.indice.leis.length) {
     res.innerHTML = topo + '<p class="vazio">Preparando a busca nos textos…</p>';
@@ -592,7 +730,7 @@ async function executarBusca(q) {
   if (r.direto && r.length === 1) E.irDireto = '#/lei/' + r[0].L.id + '/' + r[0].a.id;
   const lista = r.length
     ? `<p class="${atalhos.length ? 'subtitulo-busca' : 'contagem'}">${r.direto ? 'Ir para' : (r.length >= LIMITE ? 'Mais de ' + LIMITE + ' resultados nos textos' : plural(r.length, 'resultado', 'resultados') + ' nos textos')}</p>` + r.map(resultadoHtml).join('')
-    : (atalhos.length ? '' : `<p class="vazio">Nada encontrado para “${esc(q)}”. Tente a sigla da lei (ctn, cf, clt), o número do artigo ou outra palavra.</p>`);
+    : (atalhos.length || notasAchadas.length ? '' : `<p class="vazio">Nada encontrado para “${esc(q)}”. Tente a sigla da lei (ctn, cf, clt), o número do artigo ou outra palavra.</p>`);
   res.innerHTML = r.direto ? lista + topo : topo + lista;
 }
 function buscar(q) {
@@ -686,20 +824,22 @@ function abrirBusca(q = '') {
   history.pushState(null, '', '#/busca/' + encodeURIComponent(q)); E.pilha.push(location.hash);
   const inp = telaBusca(q); inp.focus();
 }
-function abrirSumario() {
-  const L = E.leis.get(($('.leitor') || {}).dataset?.lei); if (!L) return;
+function abrirSumario(leitor) {
+  const L = leitor && E.leis.get(leitor.dataset.lei); if (!L) return;
+  E.leitorSumario = leitor;
   const cabs = L.blocos.filter(b => b.tipo === 'titulo');
   $('#lista-indice').innerHTML = cabs.length
-    ? cabs.map(b => `<a class="n${b.nivel}" href="#/lei/${esc(L.id)}/${esc(b.id)}" data-acao="fechar-nav"><small>${esc(b.rotulo)}</small>${esc(b.nome || '')}</a>`).join('')
+    ? cabs.map(b => `<a class="n${b.nivel}" href="#" data-acao="sumario-ir" data-id="${esc(b.id)}"><small>${esc(b.rotulo)}</small>${esc(b.nome || '')}</a>`).join('')
     : '<p class="vazio">Esta lei não tem divisões em títulos ou capítulos.</p>';
   $('#dlg-indice').showModal();
 }
 document.addEventListener('click', async e => {
   const hl = e.target.closest('mark.hl');
   if (hl && getSelection().isCollapsed) {
-    const L = E.leis.get(($('.leitor') || {}).dataset?.lei);
+    const leitor = hl.closest('.leitor');
+    const L = leitor && E.leis.get(leitor.dataset.lei);
     const m = L && (E.marcas[L.id] || []).find(x => x.id === hl.dataset.marca);
-    if (m) { clearTimeout(M.timer); M.ativa = m; M.pendente = null; mostrarBarra(true, true); return; }
+    if (m) { clearTimeout(M.timer); M.ativa = m; M.leitor = leitor; M.pendente = null; mostrarBarra(true, true); return; }
   }
   const el = e.target.closest('[data-acao]');
   if (!el) { if (M.ativa && !e.target.closest('#barra-marca')) fecharMarca(); return; }
@@ -710,7 +850,23 @@ document.addEventListener('click', async e => {
   if (acao === 'busca') { e.preventDefault(); abrirBusca(''); }
   else if (acao === 'exemplo') { const inp = $('#q'); inp.value = el.dataset.valor; inp.dispatchEvent(new Event('input')); }
   else if (acao === 'voltar') { if (E.pilha.length > 1) history.back(); else location.replace('#/'); }
-  else if (acao === 'sumario') abrirSumario();
+  else if (acao === 'sumario') abrirSumario(el.closest('.leitor'));
+  else if (acao === 'sumario-ir') { e.preventDefault(); el.closest('dialog').close(); irPara(el.dataset.id, false, E.leitorSumario); }
+  else if (acao === 'lado') abrirLado(el.closest('.leitor'));
+  else if (acao === 'nota-salvar') salvarNota();
+  else if (acao === 'nota-excluir') { $('#nota-texto').value = ''; salvarNota(); }
+  else if (acao === 'col-alternar') alternarColecao(el.dataset.col);
+  else if (acao === 'col-criar') criarColecao();
+  else if (acao === 'col-remover') removerDaColecao(el.dataset.col, el.dataset.lei, el.dataset.art);
+  else if (acao === 'col-renomear') mostrarRenomear(el.dataset.col);
+  else if (acao === 'col-renomear-salvar') renomearColecao(el.dataset.col);
+  else if (acao === 'col-excluir') excluirColecao(el);
+  else if (acao === 'col-ouvir') ouvirColecao(el.dataset.col);
+  else if (acao === 'voz-play') { VOZ.pausada ? vozRetomar() : vozPausar(); }
+  else if (acao === 'voz-ant') vozPular(-1);
+  else if (acao === 'voz-prox') vozPular(1);
+  else if (acao === 'voz-vel') vozVelocidade();
+  else if (acao === 'voz-parar') vozParar(false);
   else if (acao === 'ajustes') { aplicarPrefs(); $('#dlg-ajustes').showModal(); }
   else if (acao === 'fechar') el.closest('dialog').close();
   else if (acao === 'fechar-nav') el.closest('dialog').close();
@@ -720,21 +876,16 @@ document.addEventListener('click', async e => {
     E.fonte = Math.min(1.6, Math.max(0.8, Math.round((E.fonte + Number(el.dataset.valor) * 0.1) * 10) / 10));
     guardar.gravar('fonte', E.fonte); aplicarPrefs();
   }
-  else if (acao === 'fav' || acao === 'copiar') {
-    const L = E.leis.get($('.leitor').dataset.lei);
-    const a = L.blocos.find(b => b.id === el.dataset.art);
+  else if (['fav', 'copiar', 'nota', 'ouvir'].includes(acao)) {
+    const leitor = el.closest('.leitor');
+    const L = leitor && E.leis.get(leitor.dataset.lei); if (!L) return;
+    const a = L.blocos.find(b => b.id === el.dataset.art); if (!a) return;
     if (acao === 'copiar') {
       const ok = await copiar(textoItem(L, a) + '\n(' + L.sigla + ')');
       toast(ok ? rotItem(L, a) + ' copiado' : 'Não foi possível copiar');
-    } else {
-      const i = E.favs.findIndex(f => f.lei === L.id && f.art === a.id);
-      if (i >= 0) { E.favs.splice(i, 1); el.setAttribute('aria-pressed', 'false'); toast('Removido dos favoritos'); }
-      else {
-        E.favs.unshift({ lei: L.id, art: a.id, sigla: L.sigla, numero: a.numero, rot: rotItem(L, a), trecho: (a.caput || '').slice(0, 160) });
-        el.setAttribute('aria-pressed', 'true'); toast('Salvo nos favoritos');
-      }
-      guardar.gravar('favs', E.favs);
-    }
+    } else if (acao === 'fav') abrirColecoes(L, a);
+    else if (acao === 'nota') abrirNota(L, a);
+    else ouvirAPartirDe(L, a);
   }
 });
 document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
@@ -751,10 +902,12 @@ function mostrarBarra(on, edicao = false) {
 function offsetEm(tx, no, off) { const r = document.createRange(); r.selectNodeContents(tx); r.setEnd(no, off); return r.toString().length; }
 function lerSelecao() {
   const s = getSelection();
-  const leitor = $('.leitor');
-  if (!s.rangeCount || s.isCollapsed || !leitor) return null;
+  if (!s.rangeCount || s.isCollapsed) return null;
   const r = s.getRangeAt(0);
-  if (!leitor.contains(r.commonAncestorContainer)) return null;
+  const no = r.commonAncestorContainer;
+  const leitor = (no.nodeType === 1 ? no : no.parentElement)?.closest('.leitor');
+  if (!leitor) return null;
+  M.leitorSel = leitor;
   const segs = [];
   for (const tx of leitor.querySelectorAll('.tx')) {
     if (!r.intersectsNode(tx)) continue;
@@ -763,7 +916,7 @@ function lerSelecao() {
     let fim = tx.contains(r.endContainer) ? offsetEm(tx, r.endContainer, r.endOffset) : t.length;
     while (ini < fim && /\s/.test(t[ini])) ini++;
     while (fim > ini && /\s/.test(t[fim - 1])) fim--;
-    if (fim > ini) segs.push({ art: tx.closest('.art').id, p: Number(tx.dataset.p), ini, fim, trecho: t.slice(ini, fim) });
+    if (fim > ini) segs.push({ art: tx.closest('.art').dataset.id, p: Number(tx.dataset.p), ini, fim, trecho: t.slice(ini, fim) });
   }
   return segs.length ? segs : null;
 }
@@ -771,7 +924,7 @@ document.addEventListener('selectionchange', () => {
   clearTimeout(M.calc);
   M.calc = setTimeout(() => {
     const segs = lerSelecao();
-    if (segs) { clearTimeout(M.timer); M.pendente = segs; M.ativa = null; mostrarBarra(true); }
+    if (segs) { clearTimeout(M.timer); M.pendente = segs; M.leitor = M.leitorSel; M.ativa = null; mostrarBarra(true); }
     else if (!M.ativa) {
       // espera um instante: no celular, tocar na barra desfaz a seleção antes do clique
       clearTimeout(M.timer);
@@ -782,14 +935,16 @@ document.addEventListener('selectionchange', () => {
 barraMarca.addEventListener('mousedown', e => e.preventDefault());
 function salvarMarcas() { guardar.gravar('marcas', E.marcas); }
 function redesenharArtigos(L, ids) {
-  for (const id of new Set(ids)) {
-    const el = document.getElementById(id), a = L.blocos.find(b => b.id === id);
-    if (el && a) el.outerHTML = artigoHtml(L, a);
+  for (const leitor of document.querySelectorAll(`.leitor[data-lei="${L.id}"]`)) {
+    for (const id of new Set(ids)) {
+      const el = leitor.querySelector(`.art[data-id="${id}"]`), a = L.blocos.find(b => b.id === id);
+      if (el && a) el.outerHTML = artigoHtml(L, a, leitor.dataset.pref || '');
+    }
   }
 }
 function fecharMarca() { M.pendente = null; M.ativa = null; mostrarBarra(false); try { getSelection().removeAllRanges(); } catch (e) { } }
 function marcar(cor) {
-  const L = E.leis.get(($('.leitor') || {}).dataset?.lei); if (!L) return fecharMarca();
+  const L = M.leitor && E.leis.get(M.leitor.dataset.lei); if (!L) return fecharMarca();
   const lista = E.marcas[L.id] || (E.marcas[L.id] = []);
   if (M.ativa) {
     const g = M.ativa.grupo || M.ativa.id;
@@ -816,7 +971,7 @@ function marcar(cor) {
   toast('Trecho marcado');
 }
 function desmarcar() {
-  const L = E.leis.get(($('.leitor') || {}).dataset?.lei);
+  const L = M.leitor && E.leis.get(M.leitor.dataset.lei);
   if (L && M.ativa) {
     const lista = E.marcas[L.id] || [];
     const g = M.ativa.grupo || M.ativa.id;
@@ -832,7 +987,7 @@ let leituraTimer = 0;
 window.addEventListener('scroll', () => {
   clearTimeout(leituraTimer);
   leituraTimer = setTimeout(() => {
-    const leitor = $('.leitor'); if (!leitor) return;
+    const leitor = $('.leitor.unico'); if (!leitor) return;
     const L = E.leis.get(leitor.dataset.lei); if (!L) return;
     if (window.scrollY < 150) { delete E.leitura[L.id]; guardar.gravar('leitura', E.leitura); return; }
     const barra = leitor.querySelector('.barra').getBoundingClientRect();
@@ -844,12 +999,318 @@ window.addEventListener('scroll', () => {
     }
     if (!alvo) return;
     let rot;
-    if (alvo.classList.contains('art')) rot = rotItem(L, L.blocos.find(b => b.id === alvo.id));
-    else { const c = L.blocos.find(b => b.id === alvo.id); rot = c ? c.rotulo.replace(/^(\S)(\S*)/, (_, x, y) => x + y.toLowerCase()) : 'início'; }
-    E.leitura[L.id] = { id: alvo.id, rot, em: Date.now() };
+    const idAlvo = alvo.dataset.id;
+    if (alvo.classList.contains('art')) rot = rotItem(L, L.blocos.find(b => b.id === idAlvo));
+    else { const c = L.blocos.find(b => b.id === idAlvo); rot = c ? c.rotulo.replace(/^(\S)(\S*)/, (_, x, y) => x + y.toLowerCase()) : 'início'; }
+    E.leitura[L.id] = { id: idAlvo, rot, em: Date.now() };
     guardar.gravar('leitura', E.leitura);
   }, 350);
 }, { passive: true });
+
+/* ---------- Anotações ---------- */
+function notaDe(lei, art) { return (E.notas[lei] || {})[art]; }
+function abrirNota(L, a) {
+  E.notaAlvo = { L, a };
+  const n = notaDe(L.id, a.id);
+  $('#nota-alvo').textContent = L.sigla + ', ' + rotItem(L, a);
+  $('#nota-texto').value = n ? n.texto : '';
+  $('#dlg-nota [data-acao="nota-excluir"]').hidden = !n;
+  $('#dlg-nota').showModal();
+}
+function salvarNota() {
+  const { L, a } = E.notaAlvo || {}; if (!L) return;
+  const texto = $('#nota-texto').value.trim();
+  const tinha = !!notaDe(L.id, a.id);
+  if (texto) (E.notas[L.id] || (E.notas[L.id] = {}))[a.id] = { texto, em: Date.now(), sigla: L.sigla, rot: rotItem(L, a) };
+  else if (E.notas[L.id]) { delete E.notas[L.id][a.id]; if (!Object.keys(E.notas[L.id]).length) delete E.notas[L.id]; }
+  guardar.gravar('notas', E.notas);
+  $('#dlg-nota').close();
+  redesenharArtigos(L, [a.id]);
+  toast(texto ? 'Anotação salva' : (tinha ? 'Anotação excluída' : 'Nada para salvar'));
+}
+
+/* ---------- Coleções ---------- */
+const salvarCols = () => guardar.gravar('colecoes', E.cols);
+function naColecao(lei, art) { return E.cols.some(c => c.itens.some(x => x.lei === lei && x.art === art)); }
+function itemDe(L, a) { return { lei: L.id, art: a.id, sigla: L.sigla, numero: a.numero, rot: rotItem(L, a), trecho: (a.caput || '').slice(0, 160), em: Date.now() }; }
+function atualizarEstrelas(lei, art) {
+  const on = String(naColecao(lei, art));
+  document.querySelectorAll(`.leitor[data-lei="${lei}"] .art[data-id="${art}"] [data-acao="fav"]`).forEach(b => b.setAttribute('aria-pressed', on));
+}
+function abrirColecoes(L, a) {
+  E.colAlvo = { L, a };
+  $('#col-nome').value = '';
+  desenharColecoes();
+  $('#dlg-colecao').showModal();
+}
+function desenharColecoes() {
+  const { L, a } = E.colAlvo;
+  $('#col-alvo').textContent = L.sigla + ', ' + rotItem(L, a);
+  $('#col-lista').innerHTML = E.cols.length ? E.cols.map(c => {
+    const tem = c.itens.some(x => x.lei === L.id && x.art === a.id);
+    return `<button class="col-item" data-acao="col-alternar" data-col="${esc(c.id)}" aria-pressed="${tem}">
+      <span class="col-check">${tem ? ICO.check : ''}</span><span class="col-nome">${esc(c.nome)}</span><span class="col-qtd">${c.itens.length}</span></button>`;
+  }).join('') : '<p class="dlg-sub">Crie sua primeira coleção, por exemplo "Tributário – P2" ou "OAB 1ª fase".</p>';
+}
+function alternarColecao(cid) {
+  const c = E.cols.find(x => x.id === cid), { L, a } = E.colAlvo; if (!c) return;
+  const i = c.itens.findIndex(x => x.lei === L.id && x.art === a.id);
+  if (i >= 0) c.itens.splice(i, 1); else c.itens.unshift(itemDe(L, a));
+  salvarCols(); desenharColecoes(); atualizarEstrelas(L.id, a.id);
+}
+function criarColecao() {
+  const campo = $('#col-nome'), nome = campo.value.trim();
+  if (!nome) { campo.focus(); return; }
+  const c = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), nome, itens: [] };
+  if (E.colAlvo) c.itens.push(itemDe(E.colAlvo.L, E.colAlvo.a));
+  E.cols.push(c); salvarCols(); campo.value = '';
+  desenharColecoes();
+  if (E.colAlvo) atualizarEstrelas(E.colAlvo.L.id, E.colAlvo.a.id);
+  toast('Coleção "' + nome + '" criada');
+}
+async function telaColecao(id) {
+  const c = E.cols.find(x => x.id === id);
+  if (!c) { app.innerHTML = '<div class="wrap"><p class="vazio">Esta coleção não existe mais.</p><p><a href="#/">Voltar ao início</a></p></div>'; return; }
+  document.title = c.nome + ' | Vade Mecum';
+  app.innerHTML = `<header class="barra neutra"><div class="barra-in">
+      <button class="ico" data-acao="voltar" aria-label="Voltar">${ICO.voltar}</button>
+      <div class="barra-tit"><strong>${esc(c.nome)}</strong><span>${plural(c.itens.length, 'artigo', 'artigos')}</span></div>
+      ${temVoz && c.itens.length ? `<button class="ico" data-acao="col-ouvir" data-col="${esc(c.id)}" aria-label="Ouvir a coleção">${ICO.ouvir}</button>` : ''}
+    </div></header>
+    <div class="wrap">
+      <div class="col-acoes">
+        <button class="btn-sec" data-acao="col-renomear" data-col="${esc(c.id)}">Renomear</button>
+        <button class="btn-sec perigo" data-acao="col-excluir" data-col="${esc(c.id)}">Excluir coleção</button>
+      </div>
+      <div id="area-renomear"></div>
+      ${c.itens.length ? `<ul class="lista">${c.itens.map(x => {
+        const n = notaDe(x.lei, x.art);
+        return `<li class="col-linha" data-item="${esc(x.lei)}/${esc(x.art)}"><a href="#/lei/${esc(x.lei)}/${esc(x.art)}">
+          <span class="ref">${esc(x.sigla)}, ${esc(x.rot || 'Art. ' + x.numero)}</span><span class="trecho">${esc(x.trecho)}</span>
+          ${n ? `<span class="nota-mini">Anotação: ${esc(n.texto.slice(0, 90))}${n.texto.length > 90 ? '…' : ''}</span>` : ''}</a>
+          <button class="ico" data-acao="col-remover" data-col="${esc(c.id)}" data-lei="${esc(x.lei)}" data-art="${esc(x.art)}" aria-label="Remover da coleção">${ICO.x}</button></li>`;
+      }).join('')}</ul>` : '<p class="vazio">Nenhum artigo nesta coleção ainda. Toque na estrela de um artigo para adicioná-lo aqui.</p>'}
+    </div>`;
+  window.scrollTo(0, 0);
+  vozRealcar(false);
+  // Já carrega as leis da coleção para a leitura em voz alta começar na hora do toque
+  Promise.all([...new Set(c.itens.map(x => x.lei))].map(l => lei(l).catch(() => null)));
+}
+function removerDaColecao(cid, leiId, art) {
+  const c = E.cols.find(x => x.id === cid); if (!c) return;
+  c.itens = c.itens.filter(x => !(x.lei === leiId && x.art === art));
+  salvarCols(); telaColecao(cid); toast('Removido da coleção');
+}
+function mostrarRenomear(cid) {
+  const c = E.cols.find(x => x.id === cid); if (!c) return;
+  $('#area-renomear').innerHTML = `<div class="col-renomear"><label class="sr" for="novo-nome">Novo nome</label>
+    <input id="novo-nome" maxlength="60" value="${esc(c.nome)}" enterkeyhint="done" data-col="${esc(cid)}">
+    <button class="btn" data-acao="col-renomear-salvar" data-col="${esc(cid)}">Salvar</button></div>`;
+  $('#novo-nome').focus();
+}
+function renomearColecao(cid) {
+  const c = E.cols.find(x => x.id === cid), nome = ($('#novo-nome') || {}).value?.trim();
+  if (!c || !nome) return;
+  c.nome = nome; salvarCols(); telaColecao(cid); toast('Coleção renomeada');
+}
+function excluirColecao(btn) {
+  if (btn.dataset.confirma !== '1') {
+    btn.dataset.confirma = '1'; btn.textContent = 'Toque de novo para excluir';
+    setTimeout(() => { if (btn.isConnected) { btn.dataset.confirma = ''; btn.textContent = 'Excluir coleção'; } }, 4000);
+    return;
+  }
+  E.cols = E.cols.filter(x => x.id !== btn.dataset.col); salvarCols();
+  toast('Coleção excluída'); location.replace('#/');
+}
+
+/* ---------- Leitura em voz alta ---------- */
+const temVoz = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+const VOZ = { fila: [], i: 0, j: 0, partes: null, ativa: false, pausada: false, vel: guardar.ler('vel', 1), token: 0, voz: null, titulo: '' };
+const VELOCIDADES = [1, 1.25, 1.5, 1.75, 0.75];
+function escolherVoz() {
+  if (VOZ.voz) return VOZ.voz;
+  const vs = speechSynthesis.getVoices();
+  VOZ.voz = vs.find(v => /pt[-_]BR/i.test(v.lang)) || vs.find(v => /^pt/i.test(v.lang)) || null;
+  return VOZ.voz;
+}
+if (temVoz && speechSynthesis.addEventListener) speechSynthesis.addEventListener('voiceschanged', () => { VOZ.voz = null; });
+function romano(r) {
+  const v = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  if (!/^[IVXLCDM]+$/.test(r)) return r;
+  let n = 0;
+  for (let i = 0; i < r.length; i++) { const a = v[r[i]], b = v[r[i + 1]] || 0; n += a < b ? -a : a; }
+  return n;
+}
+function falavel(t) {
+  return (t || '').replace(/\bArts\.\s*/g, 'artigos ').replace(/\bArt\.\s*/g, 'artigo ')
+    .replace(/§§/g, ' parágrafos ').replace(/§/g, ' parágrafo ').replace(/\bn[º°]\s*/gi, 'número ')
+    .replace(/\s[–—]\s/g, ', ').replace(/\s+/g, ' ').trim();
+}
+function partesDe(L, a) {
+  const out = [(L.grupo === 'sumulas' ? rotItem(L, a) : 'Artigo ' + a.numero) + '. ' + falavel(a.caput)];
+  for (const d of a.dispositivos || []) {
+    let r;
+    if (d.tipo === 'inciso') { const [rm, suf] = d.rotulo.split('-'); r = 'Inciso ' + romano(rm) + (suf ? ' ' + suf : ''); }
+    else if (d.tipo === 'alinea') r = 'Alínea ' + d.rotulo.replace(')', '');
+    else if (d.tipo === 'item') r = 'Item ' + d.rotulo.replace('.', '');
+    else r = d.rotulo.replace(/^§\s*/, 'Parágrafo ').replace(/\.$/, '');
+    out.push(r + '. ' + falavel(d.texto));
+  }
+  // Trechos curtos: o Safari às vezes interrompe falas muito longas
+  return out.flatMap(t => t.length <= 260 ? [t] : (t.match(/[^.;:]+[.;:]?\s*/g) || [t]).reduce((acc, p) => {
+    if (acc.length && (acc[acc.length - 1] + p).length <= 260) acc[acc.length - 1] += p; else acc.push(p);
+    return acc;
+  }, []));
+}
+function ouvirAPartirDe(L, a) {
+  // Lê do artigo tocado até o fim do capítulo (ou do título, se a lei não tiver capítulos)
+  const ini = L.blocos.indexOf(a), fila = [];
+  for (let k = ini; k < L.blocos.length && fila.length < 500; k++) {
+    const b = L.blocos[k];
+    if (b.tipo === 'titulo') { if (b.nivel <= 3) break; continue; }
+    fila.push({ lei: L.id, art: b.id });
+  }
+  vozIniciar(fila, 'até o fim do capítulo');
+}
+function ouvirColecao(cid) {
+  const c = E.cols.find(x => x.id === cid); if (!c) return;
+  const fila = c.itens.filter(x => E.leis.has(x.lei)).map(x => ({ lei: x.lei, art: x.art }));
+  if (!fila.length) { toast('Carregando as leis, tente de novo em instantes'); return; }
+  vozIniciar(fila, c.nome);
+}
+function vozIniciar(fila, titulo) {
+  if (!temVoz) { toast('Este navegador não tem leitura em voz alta'); return; }
+  VOZ.token++;
+  if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+  Object.assign(VOZ, { fila, i: 0, j: 0, partes: null, ativa: true, pausada: false, titulo });
+  document.body.classList.add('tocando');
+  vozFalar();
+}
+function vozFalar() {
+  const tk = ++VOZ.token;
+  if (!VOZ.ativa) return;
+  if (VOZ.i >= VOZ.fila.length) { vozParar(true); return; }
+  const it = VOZ.fila[VOZ.i], L = E.leis.get(it.lei), a = L && L.blocos.find(b => b.id === it.art);
+  if (!a) { VOZ.i++; VOZ.j = 0; VOZ.partes = null; vozFalar(); return; }
+  if (!VOZ.partes) { VOZ.partes = partesDe(L, a); vozRealcar(true); }
+  if (VOZ.j >= VOZ.partes.length) { VOZ.i++; VOZ.j = 0; VOZ.partes = null; vozFalar(); return; }
+  vozBarra();
+  const u = new SpeechSynthesisUtterance(VOZ.partes[VOZ.j]);
+  u.lang = 'pt-BR';
+  try { const v = escolherVoz(); if (v) u.voice = v; } catch (e) { }
+  u.rate = VOZ.vel;
+  u.onend = () => { if (tk !== VOZ.token || VOZ.pausada) return; VOZ.j++; vozFalar(); };
+  u.onerror = ev => { if (tk !== VOZ.token || ev.error === 'interrupted' || ev.error === 'canceled') return; VOZ.j++; vozFalar(); };
+  speechSynthesis.speak(u);
+}
+function vozCortar() { VOZ.token++; if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
+function vozPausar() { VOZ.pausada = true; vozCortar(); vozBarra(); }
+function vozRetomar() { VOZ.pausada = false; vozFalar(); }
+function vozPular(d) {
+  vozCortar();
+  if (d < 0 && VOZ.j > 0) VOZ.j = 0;
+  else { VOZ.i = Math.max(0, Math.min(VOZ.fila.length - 1, VOZ.i + d)); VOZ.j = 0; VOZ.partes = null; }
+  VOZ.pausada = false; vozFalar();
+}
+function vozVelocidade() {
+  VOZ.vel = VELOCIDADES[(VELOCIDADES.indexOf(VOZ.vel) + 1) % VELOCIDADES.length] || 1;
+  guardar.gravar('vel', VOZ.vel);
+  if (!VOZ.pausada) { vozCortar(); vozFalar(); } else vozBarra();
+}
+function vozParar(terminou) {
+  vozCortar();
+  VOZ.ativa = false; VOZ.fila = []; VOZ.partes = null;
+  document.body.classList.remove('tocando');
+  $('#player').classList.remove('on');
+  document.querySelectorAll('.lendo').forEach(x => x.classList.remove('lendo'));
+  if (terminou) toast('Leitura concluída');
+}
+function vozBarra() {
+  const it = VOZ.fila[VOZ.i]; if (!it) return;
+  const L = E.leis.get(it.lei), a = L.blocos.find(b => b.id === it.art);
+  const p = $('#player');
+  p.innerHTML = `<div class="player-info"><span class="player-tit">${esc(L.sigla)}, ${esc(rotItem(L, a))}</span>
+      <span class="player-sub">${VOZ.i + 1} de ${VOZ.fila.length}, ${esc(VOZ.titulo)}</span></div>
+    <button class="ico" data-acao="voz-ant" aria-label="Voltar">${ICO.ant}</button>
+    <button class="ico" data-acao="voz-play" aria-label="${VOZ.pausada ? 'Continuar' : 'Pausar'}">${VOZ.pausada ? ICO.play : ICO.pausa}</button>
+    <button class="ico" data-acao="voz-prox" aria-label="Avançar">${ICO.prox}</button>
+    <button class="vel" data-acao="voz-vel" aria-label="Velocidade da leitura">${String(VOZ.vel).replace('.', ',')}x</button>
+    <button class="ico" data-acao="voz-parar" aria-label="Parar a leitura">${ICO.x}</button>`;
+  p.classList.add('on');
+}
+function vozRealcar(rolar) {
+  document.querySelectorAll('.lendo').forEach(x => x.classList.remove('lendo'));
+  if (!VOZ.ativa) return;
+  const it = VOZ.fila[VOZ.i]; if (!it) return;
+  const els = document.querySelectorAll(`.leitor[data-lei="${it.lei}"] .art[data-id="${it.art}"], [data-item="${it.lei}/${it.art}"]`);
+  els.forEach(x => x.classList.add('lendo'));
+  if (rolar && els[0]) {
+    const calmo = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    els[0].scrollIntoView({ block: 'center', behavior: calmo ? 'auto' : 'smooth' });
+  }
+}
+
+/* ---------- Lado a lado ---------- */
+function abrirLado(leitor) {
+  const atual = leitor ? leitor.dataset.lei : (E.indice.leis[0] || {}).id;
+  const outras = E.indice.leis.filter(l => l.id !== atual);
+  const outra = (E.ladoOutra && E.ladoOutra !== atual && infoLei(E.ladoOutra)) ? E.ladoOutra : (atual === 'cf88' ? (outras[0] || {}).id : 'cf88');
+  location.hash = '#/lado/' + atual + '/' + outra;
+}
+async function telaLado(a, b) {
+  document.title = 'Lado a lado | Vade Mecum';
+  app.innerHTML = `<div class="lado"><header class="barra neutra"><div class="barra-in">
+      <button class="ico" data-acao="voltar" aria-label="Voltar">${ICO.voltar}</button>
+      <div class="barra-tit"><strong>Lado a lado</strong><span>Escolha a lei de cada lado e digite o número para ir ao artigo</span></div>
+      <button class="ico" data-acao="ajustes" aria-label="Ajustes de leitura">${ICO.ajustes}</button>
+    </div></header>
+    <div class="lado-paineis">
+      <section class="painel leitor" data-lado="a" data-pref="pa-"></section>
+      <section class="painel leitor" data-lado="b" data-pref="pb-"></section>
+    </div></div>`;
+  await Promise.all([preencherPainel($('.painel[data-lado="a"]'), a), preencherPainel($('.painel[data-lado="b"]'), b)]);
+}
+async function preencherPainel(sec, id) {
+  sec.innerHTML = '<p class="wrap carregando">Abrindo…</p>';
+  let L;
+  try { L = await lei(id); } catch (e) { sec.innerHTML = '<p class="wrap vazio">Esta lei não pôde ser aberta.</p>'; return; }
+  sec.dataset.lei = L.id;
+  sec.style.setProperty('--cor', L.cor);
+  if (sec.dataset.lado === 'b') E.ladoOutra = L.id;
+  const pref = sec.dataset.pref;
+  sec.innerHTML = `<div class="painel-cab">
+      <select data-painel aria-label="Lei deste lado">${E.indice.leis.map(l => `<option value="${esc(l.id)}"${l.id === L.id ? ' selected' : ''}>${esc(l.sigla)} – ${esc(l.nomeCurto)}</option>`).join('')}</select>
+      <input class="painel-art" type="text" inputmode="text" autocomplete="off" placeholder="${L.grupo === 'sumulas' ? 'Nº' : 'Art.'}" aria-label="Número do ${L.grupo === 'sumulas' ? 'enunciado' : 'artigo'}" enterkeyhint="go">
+      <button class="ico" data-acao="sumario" aria-label="Sumário">${ICO.sumario}</button>
+    </div>
+    <div class="painel-rolagem"><div class="wrap texto">
+      <h1 class="lei-tit">${esc(L.titulo)}</h1>
+      ${L.blocos.map(b => b.tipo === 'artigo' ? artigoHtml(L, b, pref) : cabHtml(b, pref)).join('')}
+    </div></div>`;
+  vozRealcar(false);
+}
+document.addEventListener('change', e => {
+  const sel = e.target.closest('select[data-painel]'); if (!sel) return;
+  const sec = sel.closest('.painel');
+  preencherPainel(sec, sel.value).then(() => {
+    const ids = [...document.querySelectorAll('.painel')].map(p => p.dataset.lei);
+    history.replaceState(null, '', '#/lado/' + ids.join('/'));
+    E.pilha[E.pilha.length - 1] = location.hash;
+  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (t.matches('.painel-art')) {
+    e.preventDefault();
+    const sec = t.closest('.painel'), L = E.leis.get(sec.dataset.lei);
+    const m = norm(t.value).match(/(\d{1,4}(?:\.\d{3})?)\s*(?:[ºo°])?(?:\s*-\s*([a-z]{1,2}))?/);
+    if (!L || !m) return;
+    const id = (L.grupo === 'sumulas' ? 'sum' : 'art') + m[1].replace('.', '') + (m[2] && L.grupo !== 'sumulas' ? '-' + m[2] : '');
+    irPara(id, true, sec); t.blur();
+  } else if (t.id === 'col-nome') { e.preventDefault(); criarColecao(); }
+  else if (t.id === 'novo-nome') { e.preventDefault(); renomearColecao(t.dataset.col); }
+});
 
 /* ---------- Rotas ---------- */
 function registrarPilha() {
@@ -862,6 +1323,8 @@ function rota() {
   if (M.pendente || M.ativa) fecharMarca();
   const partes = decodeURIComponent(location.hash.slice(1) || '/').split('/').filter(Boolean);
   if (partes[0] === 'lei' && partes[1]) telaLei(partes[1], partes[2]);
+  else if (partes[0] === 'lado') telaLado(partes[1] || 'cf88', partes[2] || ((E.indice.leis.find(l => l.id !== (partes[1] || 'cf88')) || {}).id));
+  else if (partes[0] === 'colecao' && partes[1]) telaColecao(partes[1]);
   else if (partes[0] === 'busca') { if (!$('#q')) telaBusca(partes.slice(1).join('/')); }
   else { telaInicio(); window.scrollTo(0, 0); }
 }
