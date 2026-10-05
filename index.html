@@ -174,6 +174,13 @@ dialog::backdrop{background:rgba(10,15,13,.45)}
 .barra-marca .txt-btn:hover{background:color-mix(in srgb,var(--tinta) 7%,transparent)}
 .ponto{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:1px}
 .livro.pendente{opacity:.55}
+.atalhos{display:grid;gap:8px;margin:16px 0 6px}
+.livro.compacto{padding:10px 14px 10px 0;column-gap:14px}
+.livro.compacto .lombada{width:12px;margin:-10px 0}
+.livro.compacto .livro-sigla{font-size:20px}
+.livro .ir{grid-row:1/span 2;grid-column:3;align-self:center;color:var(--tinta2);font-size:14px;font-weight:500;white-space:nowrap}
+.livro.compacto{grid-template-columns:auto 1fr auto}
+.subtitulo-busca{font-size:13px;font-weight:600;color:var(--tinta2);margin:22px 0 2px;letter-spacing:.02em}
 .selo-cinza{display:inline-block;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,var(--tinta) 12%,transparent);color:var(--tinta2);font-size:12.5px;font-weight:600;font-family:var(--sans)}
 .continuar{display:flex;align-items:center;gap:14px;margin-top:14px;padding:14px 16px;border-radius:14px;background:var(--sup);border:1px solid var(--linha);border-left:6px solid var(--cor);text-decoration:none}
 .continuar .c1,.continuar .c2{display:block}
@@ -371,7 +378,7 @@ function telaInicio() {
     <header class="topo"><h1 class="marca-app">Vade Mecum</h1>
       <button class="ico" data-acao="ajustes" aria-label="Ajustes de leitura">${ICO.ajustes}</button></header>
     <p class="verif">${I.verificadoEm ? 'Leis conferidas com o Planalto em ' + dataLonga(I.verificadoEm) : 'Legislação brasileira para consulta rápida'}</p>
-    <button class="campo-busca" data-acao="busca">${ICO.lupa}<span>Buscar artigo ou palavra</span></button>
+    <button class="campo-busca" data-acao="busca">${ICO.lupa}<span>Buscar lei, artigo ou palavra</span></button>
     ${E.demo ? '<p class="aviso">Você está vendo uma amostra com alguns artigos. Os textos completos aparecem quando o robô de atualização rodar pela primeira vez.</p>' : ''}
     ${continuarHtml()}
     <h2 class="secao">Leis</h2>
@@ -384,8 +391,8 @@ function telaInicio() {
     <div style="height:48px"></div>
   </div>`;
 }
-function livroHtml(l) {
-  return `<a class="livro" href="#/lei/${esc(l.id)}" style="--cor:${esc(l.cor)}">
+function livroHtml(l, compacto = false) {
+  return `<a class="livro${compacto ? ' compacto' : ''}" href="#/lei/${esc(l.id)}" style="--cor:${esc(l.cor)}">${compacto ? '<span class="ir">Abrir</span>' : ''}
     <span class="lombada" aria-hidden="true"></span>
     <span class="livro-sigla tinta-lei">${esc(l.sigla)}</span>
     <span class="livro-info"><b>${esc(l.nomeCurto)}</b><span>${esc(faixaItens(l))}</span>
@@ -520,7 +527,7 @@ function telaBusca(q = '') {
   app.innerHTML = `<header class="barra neutra"><div class="barra-in">
       <button class="ico" data-acao="voltar" aria-label="Voltar">${ICO.voltar}</button>
       <label class="campo-busca compacto">${ICO.lupa}<span class="sr">Buscar</span>
-        <input id="q" type="search" value="${esc(q)}" placeholder="Artigo ou palavra" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></label>
+        <input id="q" type="search" value="${esc(q)}" placeholder="Lei, artigo ou palavra" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></label>
     </div></header>
     <div class="wrap"><div id="res"></div></div>`;
   const inp = $('#q');
@@ -529,28 +536,64 @@ function telaBusca(q = '') {
     clearTimeout(t);
     t = setTimeout(() => { history.replaceState(null, '', '#/busca/' + encodeURIComponent(inp.value)); E.pilha[E.pilha.length - 1] = location.hash; executarBusca(inp.value); }, 160);
   });
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
+  inp.addEventListener('keydown', async e => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    clearTimeout(t);
+    history.replaceState(null, '', '#/busca/' + encodeURIComponent(inp.value)); E.pilha[E.pilha.length - 1] = location.hash;
+    await executarBusca(inp.value);
+    if (E.irDireto) location.hash = E.irDireto; else inp.blur();
+  });
   executarBusca(q);
   return inp;
 }
 function dicasHtml() {
-  const ex = ['art. 5 cf', 'súmula 473', 'sv 11', 'nascituro', 'dignidade da pessoa humana'];
-  return `<div class="dicas"><p>Digite o número do artigo, com ou sem a sigla da lei, ou qualquer palavra do texto.</p>
+  const ex = ['ctn', 'código civil', 'cf 5', 'cp art 121', 'stj 7', 'nascituro'];
+  return `<div class="dicas"><p>Digite o nome ou a sigla da lei para abrir direto, a sigla com o número para ir ao artigo, ou qualquer palavra do texto.</p>
     ${ex.map(x => `<button data-acao="exemplo" data-valor="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;
+}
+/* Reconhece leis pelo nome, sigla ou apelido: "ctn", "cf/88", "código civil", "stj" */
+const chave = s => norm(s).replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+function acharLeis(texto) {
+  const t = chave(texto), tc = t.replace(/ /g, '');
+  if (tc.length < 2) return [];
+  const achadas = [];
+  for (const l of E.indice.leis) {
+    const sig = chave(l.sigla).replace(/ /g, '');
+    const nomes = [chave(l.nomeCurto), chave(l.titulo || ''), chave(l.apelidos || '')];
+    let p = 0;
+    if (sig === tc || sig.replace(/\d+$/, '') === tc || nomes[0] === t) p = 3;
+    else if (sig.startsWith(tc) || (l.apelidos && chave(l.apelidos).split(' ').includes(t))) p = 2;
+    else if (t.length >= 3 && nomes.some(n => (' ' + n + ' ').includes(' ' + t))) p = 1;
+    if (p) achadas.push({ l, p });
+  }
+  return achadas.sort((a, b) => b.p - a.p);
 }
 async function executarBusca(q) {
   const res = $('#res'); if (!res) return;
-  if (norm(q).trim().length < 2) { res.innerHTML = dicasHtml(); return; }
+  E.irDireto = null;
+  const nq = norm(q).trim();
+  if (nq.replace(/[^a-z0-9]/g, '').length < 2) { res.innerHTML = dicasHtml(); return; }
+
+  // 1) Atalhos para abrir a lei (aparecem na hora, sem esperar carregar os textos)
+  const atalhos = acharLeis(nq).slice(0, 4);
+  if (atalhos.length === 1 || (atalhos.length && atalhos[0].p === 3 && atalhos[1].p < 3)) E.irDireto = '#/lei/' + atalhos[0].l.id;
+  const topo = atalhos.length ? `<div class="atalhos">${atalhos.map(x => livroHtml(x.l, true)).join('')}</div>` : '';
+
   if (E.leis.size < E.indice.leis.length) {
-    res.innerHTML = '<p class="vazio">Preparando a busca em todas as leis…</p>';
+    res.innerHTML = topo + '<p class="vazio">Preparando a busca nos textos…</p>';
     try { await Promise.all(E.indice.leis.map(l => lei(l.id))); }
-    catch (e) { res.innerHTML = '<p class="vazio">Algumas leis não foram carregadas. Confira sua conexão e tente de novo.</p>'; return; }
+    catch (e) { res.innerHTML = topo + '<p class="vazio">Algumas leis não foram carregadas. Confira sua conexão e tente de novo.</p>'; return; }
   }
   if (($('#q') || {}).value !== q) return;
+
+  // 2) Artigos e súmulas
   const r = buscar(q);
-  res.innerHTML = r.length
-    ? `<p class="contagem">${r.length >= LIMITE ? 'Mais de ' + LIMITE + ' resultados' : plural(r.length, 'resultado', 'resultados')}</p>` + r.map(resultadoHtml).join('')
-    : `<p class="vazio">Nenhum artigo encontrado para “${esc(q)}”. Tente outra palavra ou o número do artigo, como art. 5.</p>`;
+  if (r.direto && r.length === 1) E.irDireto = '#/lei/' + r[0].L.id + '/' + r[0].a.id;
+  const lista = r.length
+    ? `<p class="${atalhos.length ? 'subtitulo-busca' : 'contagem'}">${r.direto ? 'Ir para' : (r.length >= LIMITE ? 'Mais de ' + LIMITE + ' resultados nos textos' : plural(r.length, 'resultado', 'resultados') + ' nos textos')}</p>` + r.map(resultadoHtml).join('')
+    : (atalhos.length ? '' : `<p class="vazio">Nada encontrado para “${esc(q)}”. Tente a sigla da lei (ctn, cf, clt), o número do artigo ou outra palavra.</p>`);
+  res.innerHTML = r.direto ? lista + topo : topo + lista;
 }
 function buscar(q) {
   const nq = norm(q).replace(/[º°ª]/g, '').trim();
@@ -567,7 +610,20 @@ function buscar(q) {
       const a = L.blocos.find(b => b.id === 'sum' + ms[2]);
       if (a) out.push({ L, a, termos: [] });
     }
+    out.direto = true;
     return out;
+  }
+  // "<lei> <número>": ctn 150, cf art. 5, cp 121-a, stj 7, código civil 2
+  const mn = nq.match(/^(.+?)[\s,]+(?:art(?:igo)?s?\.?\s*|sumula\s*|n\.?\s*)?(\d{1,4}(?:\.\d{3})?)\s*(?:-\s*([a-z]{1,2}))?\.?$/);
+  if (mn && !/^(art|artigo|sumula|sv)\.?$/.test(mn[1].trim())) {
+    const alvos = acharLeis(mn[1]).filter(x => x.p >= 2);
+    for (const { l } of alvos) {
+      const L = E.leis.get(l.id); if (!L) continue;
+      const id = (L.grupo === 'sumulas' ? 'sum' : 'art') + mn[2].replace('.', '') + (mn[3] && L.grupo !== 'sumulas' ? '-' + mn[3] : '');
+      const a = L.blocos.find(b => b.id === id);
+      if (a) out.push({ L, a, termos: [] });
+    }
+    if (out.length) { out.direto = true; return out; }
   }
   const m = nq.match(/^art(?:igo|s)?\.?\s*(\d{1,4}(?:\.\d{3})?)(?:\s*-\s*([a-z]{1,2}))?\b\s*(.*)$/);
   if (m) {
@@ -579,7 +635,9 @@ function buscar(q) {
       const a = L.blocos.find(b => b.id === id);
       if (a) out.push({ L, a, termos: [] });
     }
+    out.direto = true;
     if (out.length || !resto) return out;
+    out.direto = false;
   }
   const termos = nq.split(/\s+/).filter(t => t.length > 1);
   if (!termos.length) return out;

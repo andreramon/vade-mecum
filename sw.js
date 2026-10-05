@@ -1,5 +1,5 @@
 // Service worker: o app abre offline e as leis ficam guardadas no aparelho.
-const VERSAO = 'vm-v4';
+const VERSAO = 'vm-v5';
 const BASE = ['./', './index.html', './manifest.json', './icone.svg'];
 
 self.addEventListener('install', e => {
