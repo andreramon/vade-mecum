@@ -3,12 +3,14 @@ import * as cheerio from 'cheerio';
 
 const RE_CAB = /^(PARTE\s+(?:GERAL|ESPECIAL)|LIVRO\s+(?:[IVXLC]+|COMPLEMENTAR)|T[IÍ]TULO\s+(?:[IVXLC]+(?:-[A-Z])?|[UÚ]NICO)|CAP[IÍ]TULO\s+(?:[IVXLC]+(?:-[A-Z])?|[UÚ]NICO)|SUBSE[CÇ][AÃ]O\s+(?:[IVXLC]+(?:-[A-Z])?|[UÚ]NICA)|SE[CÇ][AÃ]O\s+(?:[IVXLC]+(?:-[A-Z])?|[UÚ]NICA))(?![A-Za-zÀ-ú])\s*[-–—.]?\s*(.*)$/;
 const RE_ADCT = /^ATO DAS DISPOSI[CÇ][OÕ]ES CONSTITUCIONAIS TRANSIT[OÓ]RIAS/;
-const RE_ART = /^(?:Art|ART|Artigo|ARTIGO)\.?\s*(\d{1,4}(?:\.\d{3})?)\s*([º°oª])?(?:-([A-Z]{1,2}))?(?![a-zà-ú])\s*\.?\s*[-–—]?\s*(.*)$/;
+const RE_ART = /^(?:Art|ART|Artigo|ARTIGO)\.?\s*(\d{1,4}(?:\.\d{3})?)\s*([º°oª])?(-[A-Z]{1,2}(?:[-\s][A-Z](?=\.))?|\s*[-–]\s*[A-Z]{1,2}(?=\.))?(?![a-zà-ú])\s*\.?\s*[-–—]?\s*(.*)$/;
 const RE_PAR = /^(§\s*\d+\s*[º°o]?(?:-[A-Z]{1,2})?|Par[aá]grafo [uú]nico)\s*\.?\s*[-–—]?\s*(.*)$/i;
 const RE_INC = /^([IVXLCDM]+(?:-[A-Z])?)\s*[-–—]\s*(.*)$/;
 const RE_ALI = /^([a-z](?:-[A-Z])?)\)\s*(.*)$/;
 const RE_ITEM = /^(\d{1,2})\.\s+(.*)$/;
 const RE_FIM = /^Bras[ií]lia,\s*\d/;
+const MARCA = '\u0001RISCADO ';
+const RISCO = 'strike, s, del, [style*="line-through"], [style*="LINE-THROUGH"]';
 const RE_NOTA = /\s*\((?:Reda[cç][aã]o|Inclu[ií]d[oa]|Acrescid[oa]|Acrescentad[oa]|Revogad[oa]|Vide|Vig[eê]ncia|Renumerad[oa]|Produ[cç][aã]o de efeito|Regulamento|Promulga[cç][aã]o|Suspens[oa]|Execu[cç][aã]o suspensa)[^()]*(?:\([^()]*\)[^()]*)*\)\s*\.?\s*$/i;
 
 function nivelDe(rotulo) {
@@ -41,7 +43,15 @@ const BLOCOS = 'p, div, h1, h2, h3, h4, h5, h6, li, td, th, tr, table, blockquot
 // às vezes trazem artigos dentro de <div>, <font> ou direto no corpo.
 export function extrairLinhas(html) {
   const $ = cheerio.load(html);
-  $('strike, s, del, script, style, head').remove(); // texto riscado = redação revogada
+  // Texto riscado = redação antiga. Some, mas deixa um marcador quando é um artigo inteiro,
+  // para artigos totalmente revogados continuarem aparecendo como "(Revogado)".
+  $(RISCO).each((_, el) => {
+    if ($(el).parents(RISCO).length) return;
+    const t = $(el).text().replace(/\s+/g, ' ').trim();
+    if (/^(?:Art|ART|Artigo|ARTIGO)\.?\s*\d/.test(t)) $(el).replaceWith('\n' + MARCA + t.slice(0, 60) + '\n');
+    else $(el).remove();
+  });
+  $('script, style, head').remove();
   $('*').contents().each((_, n) => { if (n.type === 'text') n.data = n.data.replace(/\s+/g, ' '); });
   $('br').replaceWith('\n');
   $(BLOCOS).each((_, el) => { $(el).prepend('\n').append('\n'); });
@@ -53,18 +63,42 @@ export function extrairLinhas(html) {
 export function parsearHtml(html) {
   const linhas = extrairLinhas(html);
   const blocos = [];
-  const usados = new Map();
+  const posicao = new Map(); // id do artigo -> posição em blocos
   let art = null, cabPendente = null, prefixo = '', nCab = 0, comecou = false;
 
-  const novoId = base => {
-    const n = (usados.get(base) || 0) + 1;
-    usados.set(base, n);
-    return n === 1 ? base : base + '-' + n;
+  // Mesmo número repetido: a versão que vem depois é a vigente (ex.: redação antiga sem risco,
+  // artigos do decreto que aprova a CLT). Um marcador de texto riscado nunca substitui texto real.
+  const registrar = item => {
+    const p = posicao.get(item.id);
+    if (p !== undefined) {
+      if (item.marcador && !blocos[p].marcador) return false;
+      blocos[p] = null;
+    }
+    posicao.set(item.id, blocos.length);
+    blocos.push(item);
+    return true;
+  };
+  const lerArtigo = m => {
+    const num = m[1].replace('.', '');
+    const ord = m[2] ? 'º' : '';
+    const suf = m[3] ? '-' + m[3].match(/[A-Z]{1,2}/g).join('-') : '';
+    return { id: prefixo + 'art' + num + suf.toLowerCase(), numero: m[1] + ord + suf };
   };
   const anexar = (alvo, campo, t) => { alvo[campo] = (alvo[campo] ? alvo[campo] + ' ' : '') + t; };
 
   for (const linha of linhas) {
-    if (comecou && RE_FIM.test(linha)) break; // assinatura no fim da lei
+    // Assinatura: encerra o artigo atual, mas segue lendo (a CF tem o ADCT depois dela)
+    if (comecou && RE_FIM.test(linha)) { art = null; cabPendente = null; continue; }
+
+    if (linha.startsWith(MARCA)) {
+      const mr = linha.slice(MARCA.length).match(RE_ART);
+      if (mr && comecou !== null) {
+        const { id, numero } = lerArtigo(mr);
+        const ph = { tipo: 'artigo', id, numero, caput: '(Revogado)', dispositivos: [], revogado: true, marcador: true };
+        art = registrar(ph) ? ph : null;
+      }
+      continue;
+    }
 
     if (RE_ADCT.test(linha)) {
       prefixo = 'adct-'; comecou = true; art = null; cabPendente = null;
@@ -90,17 +124,20 @@ export function parsearHtml(html) {
     m = linha.match(RE_ART);
     if (m) {
       comecou = true; cabPendente = null;
-      const num = m[1].replace('.', '');
-      const ord = m[2] ? 'º' : '';
-      const suf = m[3] ? '-' + m[3] : '';
+      const { id, numero } = lerArtigo(m);
       const { texto, nota } = separarNotas(m[4] || '');
-      art = { tipo: 'artigo', id: novoId(prefixo + 'art' + num + suf.toLowerCase()), numero: m[1] + ord + suf, caput: texto, dispositivos: [] };
+      art = { tipo: 'artigo', id, numero, caput: texto, dispositivos: [] };
       if (nota) art.nota = nota;
       if (ehRevogado(texto, nota)) art.revogado = true;
-      blocos.push(art);
+      registrar(art);
       continue;
     }
     if (!art) continue; // ementa, preâmbulo, menus do site etc.
+    if (art.marcador) { // depois de um artigo riscado, só aproveita notas como "(Revogado pela Lei...)"
+      const { texto, nota } = separarNotas(linha);
+      if (!texto && nota) art.nota = nota;
+      continue;
+    }
 
     let tipo = null, rotulo, resto;
     if ((m = linha.match(RE_PAR))) {
@@ -125,5 +162,5 @@ export function parsearHtml(html) {
       if (nota) anexar(alvo, 'nota', nota);
     }
   }
-  return blocos;
+  return blocos.filter(Boolean).map(b => { if (b.marcador) delete b.marcador; return b; });
 }

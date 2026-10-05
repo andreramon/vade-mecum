@@ -54,7 +54,7 @@ assert.equal(art.art10.caput, 'Artigo de dois dígitos, que continua em outro pa
 assert.equal(art.art1025.numero, '1.025');
 assert.equal(art.art11.revogado, true);
 assert.ok(art['adct-art1']);
-assert.ok(!art.art99, 'texto após a assinatura não deve entrar');
+assert.ok(art['adct-art99'], 'depois da assinatura a leitura continua (ADCT)');
 console.log('Parser OK:', Object.keys(art).length, 'artigos,', cab.length, 'títulos');
 
 // Página antiga: artigos fora de <p>, em <div>, <font> e direto no corpo
@@ -71,6 +71,36 @@ assert.deepEqual(antigo.map(a => a.id), ['art1', 'art2', 'art3', 'art4', 'art5']
 assert.equal(antigo[1].caput, 'Segundo artigo, que quebra a linha no código-fonte.');
 assert.equal(antigo[2].dispositivos[0].texto, 'inciso do terceiro;');
 console.log('Páginas antigas OK');
+
+// Revogados, duplicados, sufixos com espaço e ADCT depois da assinatura
+const dif = parsearHtml(`<body>
+<p>Art. 1º Fica aprovada a Consolidação (artigo do decreto).</p>
+<p>TÍTULO I</p><p>INTRODUÇÃO</p>
+<p>Art. 1º Esta Consolidação estatui as normas.</p>
+<p><strike>Art. 2º Redação antiga do dois.</strike></p>
+<p>Art. 2º Redação nova do dois. (Redação dada pela Lei nº 1, de 2020)</p>
+<p><span style="text-decoration: line-through">Art. 3º Antigo sem strike.</span></p>
+<p>Art. 3º Novo três.</p>
+<p><strike>Art. 4º Revogado inteiro.</strike></p>
+<p>(Revogado pela Lei nº 9.279, de 1996)</p>
+<p>Art. 5º Cinco.</p>
+<p>Art. 5º - A. (VETADO)</p>
+<p>Art. 5º-M A. Com espaço na letra.</p>
+<p>Brasília, 5 de outubro de 1988.</p>
+<p>ATO DAS DISPOSIÇÕES CONSTITUCIONAIS TRANSITÓRIAS</p>
+<p>Art. 1º Primeiro do ADCT.</p>
+<p>Brasília, 5 de outubro de 1988.</p><p>Ulysses Guimarães</p>
+</body>`).filter(x => x.tipo === 'artigo');
+const di = Object.fromEntries(dif.map(a => [a.id, a]));
+assert.deepEqual(dif.map(a => a.id), ['art1', 'art2', 'art3', 'art4', 'art5', 'art5-a', 'art5-m-a', 'adct-art1']);
+assert.equal(di.art1.caput, 'Esta Consolidação estatui as normas.');
+assert.equal(di.art2.caput, 'Redação nova do dois.');
+assert.equal(di.art3.caput, 'Novo três.');
+assert.equal(di.art4.revogado, true);
+assert.equal(di.art4.nota, '(Revogado pela Lei nº 9.279, de 1996)');
+assert.equal(di['art5-a'].numero, '5º-A');
+assert.equal(di['art5-m-a'].numero, '5º-M-A');
+console.log('Revogados e duplicados OK');
 
 // Súmulas
 const sum = parsearSumulas(textoDeHtml(`<html><body>

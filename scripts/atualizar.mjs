@@ -10,7 +10,7 @@ const hoje = new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Manaus'
 const DIAS_RECENTE = 30;
 // Suba este número quando o leitor mudar a forma de extrair o texto:
 // a próxima execução reorganiza os arquivos sem marcar tudo como "alterado".
-const VERSAO_LEITOR = 2;
+const VERSAO_LEITOR = 3;
 const apenas = process.argv.slice(2); // ex.: node scripts/atualizar.mjs cf88
 
 async function lerJson(url, padrao = null) {
@@ -148,7 +148,10 @@ async function main() {
     const L = await lerJson(new URL(`leis/${f.id}.json`, DADOS));
     if (!L) continue;
     const arts = L.blocos.filter(b => b.tipo === 'artigo');
-    leis.push({ id: L.id, grupo: L.grupo, rotuloItem: L.rotuloItem, sigla: L.sigla, nomeCurto: L.nomeCurto, titulo: L.titulo, cor: L.cor, apelidos: L.apelidos,
+    const maior = lista => lista.reduce((mx, a) => Math.max(mx, parseInt(a.numero.replace('.', ''), 10) || 0), 0);
+    const ultimo = maior(arts.filter(a => !a.id.startsWith('adct-')));
+    const ultimoAdct = maior(arts.filter(a => a.id.startsWith('adct-')));
+    leis.push({ ultimo, ultimoAdct: ultimoAdct || undefined, id: L.id, grupo: L.grupo, rotuloItem: L.rotuloItem, sigla: L.sigla, nomeCurto: L.nomeCurto, titulo: L.titulo, cor: L.cor, apelidos: L.apelidos,
       alteradoEm: L.alteradoEm, totalArtigos: arts.length, alteracoesRecentes: arts.filter(recente).length });
   }
   if (leis.length) await gravarJson(new URL('indice.json', DADOS), { verificadoEm: hoje, leis });
