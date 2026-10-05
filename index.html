@@ -329,16 +329,25 @@ function prepararLei(l) {
   return l;
 }
 function recente(a) { return !!a.alteradoEm && (Date.now() - new Date(a.alteradoEm + 'T12:00:00')) / 864e5 <= DIAS_RECENTE; }
+function maiorNumero(arts) { return arts.reduce((mx, a) => Math.max(mx, parseInt(String(a.numero).replace('.', ''), 10) || 0), 0); }
+function faixaItens(l) {
+  // Mostra "Art. 1º ao 250" em vez de contar itens: artigos com letra (103-A) e o ADCT
+  // fazem a contagem passar do número do último artigo.
+  if (!l.ultimo) return l.grupo === 'sumulas' ? plural(l.totalArtigos, 'súmula', 'súmulas') : plural(l.totalArtigos, 'artigo', 'artigos');
+  if (l.grupo === 'sumulas') return 'Súmulas 1 a ' + l.ultimo;
+  return 'Art. 1º ao ' + l.ultimo + (l.ultimoAdct ? ' + ADCT' : '');
+}
 function resumoLei(l) {
   const arts = l.blocos.filter(b => b.tipo === 'artigo');
   return { id: l.id, grupo: l.grupo, rotuloItem: l.rotuloItem, sigla: l.sigla, nomeCurto: l.nomeCurto, titulo: l.titulo, cor: l.cor, apelidos: l.apelidos,
-    totalArtigos: arts.length, alteracoesRecentes: arts.filter(recente).length };
+    totalArtigos: arts.length, alteracoesRecentes: arts.filter(recente).length,
+    ultimo: maiorNumero(arts.filter(a => !a.id.startsWith('adct-'))) };
 }
 function usarDemo() {
   const d = JSON.parse($('#dados-demo').textContent);
   E.demo = true;
   d.leis.forEach(l => E.leis.set(l.id, prepararLei(l)));
-  E.indice = { verificadoEm: d.verificadoEm, leis: d.leis.map(resumoLei), pendentes: d.pendentes || [] };
+  E.indice = { verificadoEm: d.verificadoEm, leis: d.leis.map(l => ({ ...resumoLei(l), ultimo: 0 })), pendentes: d.pendentes || [] };
 }
 async function lei(id) {
   if (E.leis.has(id)) return E.leis.get(id);
@@ -379,7 +388,7 @@ function livroHtml(l) {
   return `<a class="livro" href="#/lei/${esc(l.id)}" style="--cor:${esc(l.cor)}">
     <span class="lombada" aria-hidden="true"></span>
     <span class="livro-sigla tinta-lei">${esc(l.sigla)}</span>
-    <span class="livro-info"><b>${esc(l.nomeCurto)}</b><span>${l.grupo === 'sumulas' ? plural(l.totalArtigos, 'súmula', 'súmulas') : plural(l.totalArtigos, 'artigo', 'artigos')}</span>
+    <span class="livro-info"><b>${esc(l.nomeCurto)}</b><span>${esc(faixaItens(l))}</span>
       ${l.alteracoesRecentes ? `<span class="selo">${plural(l.alteracoesRecentes, 'mudança recente', 'mudanças recentes')}</span>` : ''}</span>
   </a>`;
 }
@@ -434,8 +443,7 @@ async function telaLei(id, alvo) {
   }
   document.title = L.sigla + ' | Vade Mecum';
   const info = infoLei(id) || {};
-  const nItens = L.blocos.filter(b => b.tipo === 'artigo').length;
-  const meta = [L.grupo === 'sumulas' ? plural(nItens, 'súmula', 'súmulas') : plural(nItens, 'artigo', 'artigos')];
+  const meta = [faixaItens(info.id ? info : resumoLei(L))];
   if (L.alteradoEm) meta.push('última mudança em ' + dataLonga(L.alteradoEm));
   app.innerHTML = `<div class="leitor" data-lei="${esc(L.id)}" style="--cor:${esc(L.cor)}">
     <header class="barra"><div class="barra-in">
