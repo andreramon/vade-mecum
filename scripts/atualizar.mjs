@@ -59,7 +59,56 @@ async function arquivoManual(id) {
   return null;
 }
 
+// Lê uma página de lei; se ela só redireciona (meta refresh ou JavaScript), segue o destino
+async function lerPaginaDeLei(url, saltos = 0) {
+  const { bytes, tipo } = await baixar(url);
+  const html = decodificar(bytes, tipo);
+  const blocos = parsearHtml(html);
+  if (blocos.some(b => b.tipo === 'artigo') || saltos >= 2) return { blocos, html, url };
+  const destino = html.match(/http-equiv\s*=\s*["']?refresh["']?[^>]*?url\s*=\s*['"]?([^"'>\s;]+)/i)?.[1]
+    || html.match(/(?:window\.|document\.)?location(?:\.href)?\s*=\s*["']([^"']+)["']/i)?.[1]
+    || html.match(/location\.replace\(\s*["']([^"']+)["']/i)?.[1];
+  if (!destino) return { blocos, html, url };
+  const proximo = new URL(destino, url).href;
+  console.log(`  a página redireciona para ${proximo}`);
+  return lerPaginaDeLei(proximo, saltos + 1);
+}
+
+// Endereços a tentar: o principal, os alternativos do fontes.json e as variações "compilado"/"compilada"
+function enderecosDe(f) {
+  const lista = [f.url, ...(f.urlsAlternativas || [])];
+  if (/\.htm$/i.test(f.url) && !/compilad/i.test(f.url)) lista.push(f.url.replace(/\.htm$/i, 'compilado.htm'), f.url.replace(/\.htm$/i, 'compilada.htm'));
+  return [...new Set(lista)];
+}
+
+async function obterLei(f) {
+  let melhor = null, ultimoErro = null;
+  for (const url of enderecosDe(f)) {
+    try {
+      const r = await lerPaginaDeLei(url);
+      const n = r.blocos.filter(b => b.tipo === 'artigo').length;
+      if (url !== f.url) console.log(`  tentativa em ${url}: ${n} artigos`);
+      if (!melhor || n > melhor.n) melhor = { ...r, n };
+      if (n >= (f.minimo || 5)) break;
+    } catch (e) { ultimoErro = e; }
+  }
+  if (melhor && melhor.n >= (f.minimo || 5)) {
+    if (melhor.url !== f.url) console.log(`  usando ${melhor.url} (atualize a url no fontes.json se quiser)`);
+    return melhor.blocos;
+  }
+  const manual = await arquivoManual(f.id);
+  if (manual) { console.log('  usando o arquivo enviado em fontes/'); return parsearHtml(decodificar(manual.bytes, manual.tipo)); }
+  if (!melhor) throw new Error(`${ultimoErro ? ultimoErro.message : 'falha ao baixar'}. Plano B: envie o arquivo como fontes/${f.id}.html ou .pdf`);
+  // Diagnóstico para descobrir o que o site devolveu
+  const titulo = melhor.html.match(/<title[^>]*>([^<]*)/i)?.[1]?.trim() || '(sem título)';
+  const amostra = melhor.html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+  console.log(`  diagnóstico: ${melhor.html.length} caracteres, título "${titulo}"`);
+  console.log(`  início do texto: ${amostra}`);
+  return melhor.blocos;
+}
+
 async function obterBlocos(f) {
+  if (f.tipo !== 'sumulas') return obterLei(f);
   let arquivo;
   try { arquivo = await baixar(f.url); }
   catch (e) {
@@ -68,7 +117,6 @@ async function obterBlocos(f) {
     console.log(`  site recusou (${e.message}); usando o arquivo enviado em fontes/`);
   }
   const { bytes, tipo } = arquivo;
-  if (f.tipo !== 'sumulas') return parsearHtml(decodificar(bytes, tipo));
   let texto;
   if (f.formato === 'pdf' || /pdf/i.test(tipo)) {
     const { getDocumentProxy, extractText } = await import('unpdf');
