@@ -81,6 +81,15 @@
     "url": "https://www.planalto.gov.br/ccivil_03/leis/l8069compilado.htm"
   },
   {
+    "id": "eaoab1994",
+    "sigla": "EAOAB",
+    "nomeCurto": "Estatuto da OAB",
+    "titulo": "Estatuto da Advocacia e da OAB (Lei nº 8.906, de 4 de julho de 1994)",
+    "cor": "#C0392B",
+    "apelidos": "eaoab eoab oab estatuto da oab estatuto da advocacia",
+    "url": "https://www.planalto.gov.br/ccivil_03/leis/l8906.htm"
+  },
+  {
     "id": "svstf",
     "tipo": "sumulas",
     "grupo": "sumulas",
